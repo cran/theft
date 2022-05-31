@@ -1,8 +1,8 @@
 Package: theft
 Type: Package
 Title: Tools for Handling Extraction of Features from Time Series
-Version: 0.3.9.5
-Date: 2022-04-22
+Version: 0.3.9.6
+Date: 2022-05-31
 Authors@R: c(
   person("Trent", "Henderson", email = "then6675@uni.sydney.edu.au", role = c("cre", "aut")),
   person("Annie", "Bryant", role = "ctb", comment = "Balanced classification accuracy")
@@ -30,8 +30,8 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: https://hendersontrent.github.io/theft/
 NeedsCompilation: no
-Packaged: 2022-04-25 07:25:21 UTC; trenthenderson
+Packaged: 2022-05-31 08:43:55 UTC; trenthenderson
 Author: Trent Henderson [cre, aut],
   Annie Bryant [ctb] (Balanced classification accuracy)
 Repository: CRAN
-Date/Publication: 2022-04-27 08:30:02 UTC
+Date/Publication: 2022-05-31 09:20:02 UTC

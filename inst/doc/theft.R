@@ -52,17 +52,19 @@ normed <- normalise_feature_frame(feature_matrix,
                                   method = "RobustSigmoid")
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-plot_feature_matrix(feature_matrix, 
-                    is_normalised = FALSE, 
-                    id_var = "id", 
-                    method = "RobustSigmoid",
-                    interactive = FALSE)
+plot_all_features(feature_matrix, 
+                  is_normalised = FALSE, 
+                  id_var = "id", 
+                  method = "RobustSigmoid",
+                  clust_method = "average",
+                  interactive = FALSE)
 
 ## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
 #  plot_feature_matrix(feature_matrix,
 #                      is_normalised = FALSE,
 #                      id_var = "id",
 #                      method = "RobustSigmoid",
+#                      clust_method = "average",
 #                      interactive = TRUE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
@@ -96,6 +98,7 @@ plot_ts_correlations(simData,
                      values_var = "values",
                      method = "RobustSigmoid",
                      cor_method = "pearson",
+                     clust_method = "average",
                      interactive = FALSE)
 
 ## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
@@ -106,6 +109,7 @@ plot_ts_correlations(simData,
 #                       values_var = "values",
 #                       method = "RobustSigmoid",
 #                       cor_method = "spearman",
+#                       clust_method = "average",
 #                       interactive = TRUE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
@@ -116,6 +120,7 @@ plot_feature_correlations(feature_matrix,
                           values_var = "values",
                           method = "RobustSigmoid",
                           cor_method = "pearson",
+                          clust_method = "average",
                           interactive = FALSE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
@@ -127,6 +132,7 @@ outputs <- compute_top_features(feature_matrix,
                                 method = "RobustSigmoid",
                                 cor_method = "pearson",
                                 test_method = "gaussprRadial",
+                                clust_method = "average",
                                 use_balanced_accuracy = FALSE,
                                 use_k_fold = TRUE,
                                 num_folds = 10,

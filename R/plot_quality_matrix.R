@@ -27,11 +27,11 @@ plot_quality_matrix <- function(data){
   '%ni%' <- Negate('%in%')
 
   if(expected_cols_1 %ni% the_cols){
-    stop("data should contain at least two columns called 'names' and 'values'. These are automatically produced by feature calculations such as catch_all(). Please consider running one of these first and then passing the resultant dataframe in to this function.")
+    stop("data should contain at least two columns called 'names' and 'values'. These are automatically produced by theft::calculate_features. Please run this first and then pass the resultant dataframe to this function.")
   }
 
   if(expected_cols_2 %ni% the_cols){
-    stop("data should contain at least two columns called 'names' and 'values'. These are automatically produced by feature calculations such as catch_all(). Please consider running one of these first and then passing the resultant dataframe in to this function.")
+    stop("data should contain at least two columns called 'names' and 'values'. These are automatically produced by theft::calculate_features. Please run this first and then pass the resultant dataframe to this function.")
   }
 
   if(!is.numeric(data$values)){
@@ -88,8 +88,15 @@ plot_quality_matrix <- function(data){
     ggplot2::scale_fill_manual(values = my_palette) +
     ggplot2::theme_bw() +
     ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                   legend.position = "bottom",
-                   axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+                   legend.position = "bottom")
+  
+  if(length(unique(tmp1$names)) > 22){
+    p <- p + 
+      ggplot2::theme(axis.text.x = ggplot2::element_blank())
+  } else{
+    p <- p + 
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+  }
 
   return(p)
 }
