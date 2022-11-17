@@ -1,5 +1,5 @@
 #' Produce a heatmap matrix of the calculated feature value vectors and each unique time series with automatic hierarchical clustering.
-#' @importFrom rlang .data
+#' @importFrom rlang .data warn
 #' @import dplyr
 #' @import ggplot2
 #' @import tibble
@@ -29,7 +29,7 @@
 #'   seed = 123)
 #'
 #' plot_feature_matrix(featMat, 
-#'   is_normalised = FALSE, 
+#'   is_normalised = FALSE,
 #'   id_var = "id", 
 #'   method = "RobustSigmoid",
 #'   clust_method = "average",
@@ -41,14 +41,26 @@ plot_feature_matrix <- function(data, is_normalised = FALSE, id_var = "id",
                                 clust_method = c("average", "ward.D", "ward.D2", "single", "complete", "mcquitty", "median", "centroid"),
                                 interactive = FALSE){
   
-  message("plot_feature_matrix is deprecated as of v0.3.6. Please use 'plot_al_features' instead.")
-
-  # Make RobustSigmoid the default
-
+  rlang::warn("As of 0.3.6 plot_feature_matrix is deprecated. Please use 'plot_all_features' instead",
+              .frequency = "once", .frequency_id = "plot_feature_matrix")
+  
+  # Set defaults
+  
   if(missing(method)){
     method <- "RobustSigmoid"
   } else{
     method <- match.arg(method)
+  }
+  
+  if(missing(clust_method)){
+    clust_method <- "average"
+  } else{
+    clust_method <- match.arg(clust_method)
+  }
+  
+  if(missing(id_var)){
+    id_var <- "id"
+    message("No id_var specified. Specifying 'id' as default as returned in theft::calculate_features")
   }
 
   expected_cols_1 <- "names"
@@ -76,15 +88,15 @@ plot_feature_matrix <- function(data, is_normalised = FALSE, id_var = "id",
   if(!is.null(id_var) && !is.character(id_var)){
     stop("id_var should be a string specifying a variable in the input data that uniquely identifies each observation.")
   }
-
+  
   # Method selection
-
+  
   the_methods <- c("z-score", "Sigmoid", "RobustSigmoid", "MinMax")
-
+  
   if(method %ni% the_methods){
     stop("method should be a single selection of 'z-score', 'Sigmoid', 'RobustSigmoid' or 'MinMax'")
   }
-
+  
   if(length(method) > 1){
     stop("method should be a single selection of 'z-score', 'Sigmoid', 'RobustSigmoid' or 'MinMax'")
   }
@@ -117,31 +129,32 @@ plot_feature_matrix <- function(data, is_normalised = FALSE, id_var = "id",
       dplyr::rename(id = dplyr::all_of(id_var))
   }
 
-  #------------- Normalise data -------------------
-
+  #------------- Apply normalisation -------------
+  
   if(is_normalised){
-    normed <- data_id
+    
   } else{
     
-    normed <- data_id %>%
+    data_id <- data_id %>%
       dplyr::rename(feature_set = .data$method) %>% # Avoids issues with method arg later
       dplyr::select(c(.data$id, .data$names, .data$values, .data$feature_set)) %>%
       tidyr::drop_na() %>%
+      dplyr::mutate(names = paste0(.data$feature_set, "_", .data$names)) %>% # Catches errors when using all features across sets (i.e., there's duplicates)
+      dplyr::select(-c(.data$feature_set)) %>%
       dplyr::group_by(.data$names) %>%
       dplyr::mutate(values = normalise_feature_vector(.data$values, method = method)) %>%
-      dplyr::ungroup() %>%
-      tidyr::drop_na() %>%
-      dplyr::mutate(names = paste0(.data$feature_set, "_", .data$names)) %>% # Catches errors when using all features across sets (i.e., there's duplicates)
-      dplyr::select(-c(feature_set))
+      dplyr::ungroup()
     
-    if(nrow(normed) != nrow(data_id)){
+    message("Applying linear rescaling of values to make plot legend cleaner.")
+    
+    if(nrow(data_id) < nrow(data)){
       message("Filtered out rows containing NaNs.")
     }
   }
 
   #------------- Hierarchical clustering ----------
 
-  dat <- normed %>%
+  dat <- data_id %>%
     tidyr::pivot_wider(id_cols = "id", names_from = "names", values_from = "values") %>%
     tibble::column_to_rownames(var = "id")
   
@@ -178,14 +191,14 @@ plot_feature_matrix <- function(data, is_normalised = FALSE, id_var = "id",
                                      text = paste('<br><b>ID:</b>', .data$id,
                                                   '<br><b>Feature:</b>', .data$names,
                                                   '<br><b>Scaled Value:</b>', round(.data$value, digits = 3)))) +
-        ggplot2::geom_tile() +
+        ggplot2::geom_raster() +
         ggplot2::scale_fill_stepsn(n.breaks = 6, colours = rev(mypalette),
                                    show.limits = TRUE)
     
   } else{
     p <- cluster_out %>%
         ggplot2::ggplot(ggplot2::aes(x = .data$names, y = .data$id, fill = .data$value))  +
-        ggplot2::geom_tile() +
+        ggplot2::geom_raster() +
         ggplot2::scale_fill_stepsn(n.breaks = 6, colours = rev(mypalette),
                                    show.limits = TRUE)
   }

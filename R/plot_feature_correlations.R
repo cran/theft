@@ -1,5 +1,5 @@
 #' Produce a correlation matrix plot showing pairwise correlations of feature vectors by unique id with automatic hierarchical clustering.
-#' @importFrom rlang .data
+#' @importFrom rlang .data warn
 #' @import dplyr
 #' @import ggplot2
 #' @importFrom tidyr pivot_wider
@@ -9,11 +9,11 @@
 #' @importFrom stats cor
 #' @importFrom plotly ggplotly config layout
 #' @param data a dataframe with at least 3 columns for \code{'id'}, \code{'names'} and \code{'values'}
-#' @param is_normalised a Boolean as to whether the input feature values have already been scaled. Defaults to \code{FALSE}
+#' @param is_normalised deprecated as of 0.4.0; do not use
 #' @param id_var a string specifying the ID variable to compute pairwise correlations between. Defaults to \code{"id"}
 #' @param names_var a string denoting the name of the variable/column that holds the feature names. Defaults to \code{"names"}
 #' @param values_var a string denoting the name of the variable/column that holds the numerical feature values. Defaults to \code{"values"}
-#' @param method a rescaling/normalising method to apply. Defaults to \code{"RobustSigmoid"}
+#' @param method deprecated as of 0.4.0; do not use
 #' @param cor_method the correlation method to use. Defaults to \code{"pearson"}
 #' @param clust_method the hierarchical clustering method to use for the pairwise correlation plot. Defaults to \code{"average"}
 #' @param interactive a Boolean as to whether to plot an interactive \code{plotly} graphic. Defaults to \code{FALSE}
@@ -30,35 +30,52 @@
 #'   seed = 123)
 #'   
 #' plot_feature_correlations(data = featMat, 
-#'   is_normalised = FALSE, 
 #'   id_var = "id", 
 #'   names_var = "names", 
 #'   values_var = "values",
-#'   method = "RobustSigmoid",
 #'   cor_method = "pearson",
 #'   clust_method = "average",
 #'   interactive = FALSE)
 #'
 
-plot_feature_correlations <- function(data, is_normalised = FALSE, id_var = "id", 
-                                    names_var = "names", values_var = "values",
-                                    method = c("z-score", "Sigmoid", "RobustSigmoid", "MinMax"),
-                                    cor_method = c("pearson", "spearman"),
-                                    clust_method = c("average", "ward.D", "ward.D2", "single", "complete", "mcquitty", "median", "centroid"),
-                                    interactive = FALSE){
+plot_feature_correlations <- function(data, is_normalised = NULL, id_var = "id", 
+                                      names_var = "names", values_var = "values", method = NULL,
+                                      cor_method = c("pearson", "spearman"),
+                                      clust_method = c("average", "ward.D", "ward.D2", "single", "complete", "mcquitty", "median", "centroid"),
+                                      interactive = FALSE){
   
-  # Make RobustSigmoid and pearson the default
+  if(!is.null(is_normalised) || !is.null(method)){
+    rlang::warn("As of 0.4.0 'is_normalised' and 'method' are no longer arguments to plot_feature_correlations",
+                .frequency = "once", .frequency_id = "plot_feature_correlations")
+  }
   
-  if(missing(method)){
-    method <- "RobustSigmoid"
-  } else{
-    method <- match.arg(method)
+  # Set defaults
+  
+  if(missing(id_var)){
+    id_var <- "id"
+    message("No id_var specified. Specifying 'id' as default as returned in theft::calculate_features")
+  }
+  
+  if(missing(names_var)){
+    names_var <- "names"
+    message("No names_var specified. Specifying 'names' as default as returned in theft::calculate_features")
+  }
+  
+  if(missing(values_var)){
+    values_var <- "values"
+    message("No values_var specified. Specifying 'values' as default as returned in theft::calculate_features")
   }
   
   if(missing(cor_method)){
     cor_method <- "pearson"
   } else{
     cor_method <- match.arg(cor_method)
+  }
+  
+  if(missing(clust_method)){
+    clust_method <- "average"
+  } else{
+    clust_method <- match.arg(clust_method)
   }
   
   #------------ Checks ---------------
@@ -73,18 +90,6 @@ plot_feature_correlations <- function(data, is_normalised = FALSE, id_var = "id"
   
   if(expected_cols_1 %ni% the_cols){
     stop("data should contain at least one columns called 'method' containing feature set names. This is automatically produced by theft::calculate_features. Please run this first and then pass the resultant dataframe to this function.")
-  }
-  
-  # Method selection
-  
-  the_methods <- c("z-score", "Sigmoid", "RobustSigmoid", "MinMax")
-  
-  if(method %ni% the_methods){
-    stop("method should be a single selection of 'z-score', 'Sigmoid', 'RobustSigmoid' or 'MinMax'")
-  }
-  
-  if(length(method) > 1){
-    stop("method should be a single selection of 'z-score', 'Sigmoid', 'RobustSigmoid' or 'MinMax'")
   }
   
   # Correlation method selection
@@ -118,38 +123,29 @@ plot_feature_correlations <- function(data, is_normalised = FALSE, id_var = "id"
   
   # Dataframe length checks and tidy format wrangling
   
-  data_re <- data %>%
+  data_id <- data %>%
     dplyr::rename(id = dplyr::all_of(id_var),
                   names = dplyr::all_of(names_var),
                   values = dplyr::all_of(values_var))
   
-  #------------- Normalise data -------------------
+  #------------- Clean up structure --------------
   
-  if(is_normalised){
-    normed <- data_re
-  } else{
-    
-    normed <- data_re %>%
-      dplyr::rename(feature_set = .data$method) %>% # Avoids issues with method arg later
-      dplyr::select(c(.data$id, .data$names, .data$values, .data$feature_set)) %>%
-      tidyr::drop_na() %>%
-      dplyr::group_by(.data$names) %>%
-      dplyr::mutate(values = normalise_feature_vector(.data$values, method = method)) %>%
-      dplyr::ungroup() %>%
-      tidyr::drop_na() %>%
-      dplyr::mutate(names = paste0(.data$feature_set, "_", .data$names)) %>% # Catches errors when using all features across sets (i.e., there's duplicates)
-      dplyr::select(-c(feature_set))
-    
-    if(nrow(normed) != nrow(data_re)){
-      message("Filtered out rows containing NaNs.")
-    }
+  data_id <- data_id %>%
+    dplyr::rename(feature_set = .data$method) %>% # Avoids issues with method arg later
+    dplyr::select(c(.data$id, .data$names, .data$values, .data$feature_set)) %>%
+    tidyr::drop_na() %>%
+    dplyr::mutate(names = paste0(.data$feature_set, "_", .data$names)) %>% # Catches errors when using all features across sets (i.e., there's duplicates)
+    dplyr::select(-c(.data$feature_set))
+  
+  if(nrow(data_id) < nrow(data)){
+    message("Filtered out rows containing NaNs.")
   }
   
   #------------- Data reshaping -------------------
   
-  features <- unique(normed$names)
+  features <- unique(data_id$names)
   
-  ids_to_keep <- normed %>%
+  ids_to_keep <- data_id %>%
     dplyr::group_by(.data$id) %>%
     dplyr::summarise(counter = dplyr::n()) %>%
     dplyr::ungroup() %>%
@@ -157,7 +153,7 @@ plot_feature_correlations <- function(data, is_normalised = FALSE, id_var = "id"
   
   ids_to_keep <- ids_to_keep$id
   
-  cor_dat <- normed %>%
+  cor_dat <- data_id %>%
     dplyr::filter(.data$id %in% ids_to_keep) %>%
     tidyr::pivot_wider(id_cols = "names", names_from = "id", values_from = "values") %>%
     dplyr::select(-c(.data$names))
@@ -199,7 +195,7 @@ plot_feature_correlations <- function(data, is_normalised = FALSE, id_var = "id"
   }
   
   p <- p +
-    ggplot2::geom_tile(ggplot2::aes(fill = .data$value)) +
+    ggplot2::geom_raster(ggplot2::aes(fill = .data$value)) +
     ggplot2::labs(title = "Pairwise correlation matrix",
                   x = "Feature",
                   y = "Feature",

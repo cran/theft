@@ -19,7 +19,7 @@ compute_top_features(
   use_k_fold = FALSE,
   num_folds = 10,
   use_empirical_null = FALSE,
-  null_testing_method = c("model free shuffles", "null model fits"),
+  null_testing_method = c("ModelFreeShuffles", "NullModelFits"),
   p_value_method = c("empirical", "gaussian"),
   num_permutations = 50,
   pool_empirical_null = FALSE,
@@ -37,7 +37,7 @@ compute_top_features(
 
 \item{normalise_violin_plots}{a Boolean of whether to normalise features before plotting. Defaults to \code{FALSE}}
 
-\item{method}{a rescaling/normalising method to apply. Defaults to \code{"RobustSigmoid"}}
+\item{method}{a rescaling/normalising method to apply to violin plots. Defaults to \code{"RobustSigmoid"}}
 
 \item{cor_method}{the correlation method to use. Defaults to \code{"pearson"}}
 
@@ -92,7 +92,7 @@ compute_top_features(featMat,
   use_k_fold = FALSE,
   num_folds = 10,
   use_empirical_null = TRUE,
-  null_testing_method = "model free shuffles",
+  null_testing_method = "ModelFreeShuffles",
   p_value_method = "gaussian",
   num_permutations = 100,
   pool_empirical_null = FALSE,

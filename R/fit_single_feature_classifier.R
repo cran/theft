@@ -91,7 +91,7 @@ fit_single_feature_models <- function(data, test_method, use_balanced_accuracy, 
   
   if(use_empirical_null){
     
-    if(null_testing_method == "null model fits"){
+    if(null_testing_method == "NullModelFits"){
       
       # Run procedure
       
@@ -369,7 +369,6 @@ calculate_unpooled_null <- function(main_matrix, main_matrix_balanced = NULL, x,
 gather_binomial_info <- function(data, x){
   
   tmp <- clean_by_feature(data = data, x = x)
-  
   mod <- stats::glm(formula = stats::formula(paste0("group ~ ", colnames(tmp[3]))), data = tmp, family = stats::binomial())
   
   tmp <- data.frame(feature = as.character(mod$terms[[3]]),
@@ -460,7 +459,6 @@ clean_by_feature <- function(data, x){
 #' @param num_permutations an integer specifying the number of class label shuffles to perform if \code{use_empirical_null} is \code{TRUE}. Defaults to \code{50}
 #' @param pool_empirical_null a Boolean specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}
 #' @param seed fixed number for R's random number generator to ensure reproducibility
-#' @param return_raw_estimates a Boolean (for testing purposes only -- will break \code{compute_top_features}!!) specifying whether to return the raw main and null model results
 #' @return an object of class dataframe containing results
 #' @author Trent Henderson
 #' @export
@@ -490,90 +488,26 @@ clean_by_feature <- function(data, x){
 #'   use_k_fold = TRUE,
 #'   num_folds = 10,
 #'   use_empirical_null = TRUE,
-#'   null_testing_method = "model free shuffles",
+#'   null_testing_method = "ModelFreeShuffles",
 #'   p_value_method = "gaussian",
 #'   num_permutations = 50,
 #'   pool_empirical_null = FALSE,
-#'   seed = 123,
-#'   return_raw_estimates = FALSE) 
+#'   seed = 123) 
 #' }
 #' 
 
 fit_single_feature_classifier <- function(data, id_var = "id", group_var = "group",
                                           test_method = "gaussprRadial", use_balanced_accuracy = FALSE,
                                           use_k_fold = FALSE, num_folds = 10, 
-                                          use_empirical_null = FALSE, null_testing_method = c("model free shuffles", "null model fits"),
+                                          use_empirical_null = FALSE, null_testing_method = c("ModelFreeShuffles", "NullModelFits"),
                                           p_value_method = c("empirical", "gaussian"), num_permutations = 50,
-                                          pool_empirical_null = FALSE, seed = 123, return_raw_estimates = FALSE){
+                                          pool_empirical_null = FALSE, seed = 123){
   
-  #---------- Check arguments ------------
-  
-  expected_cols_1 <- "names"
-  expected_cols_2 <- "values"
-  expected_cols_3 <- "method"
-  the_cols <- colnames(data)
-  '%ni%' <- Negate('%in%')
-  
-  if(expected_cols_1 %ni% the_cols){
-    stop("data should contain at least three columns called 'names', 'values', and 'method'. These are automatically produced by theft::calculate_features(). Please consider running this first and then passing the resultant dataframe to this function.")
-  }
-  
-  if(expected_cols_2 %ni% the_cols){
-    stop("data should contain at least three columns called 'names', 'values', and 'method'. These are automatically produced by theft::calculate_features(). Please consider running this first and then passing the resultant dataframe to this function.")
-  }
-  
-  if(expected_cols_3 %ni% the_cols){
-    stop("data should contain at least three columns called 'names', 'values', and 'method'. These are automatically produced by theft::calculate_features(). Please consider running this first and then passing the resultant dataframe to this function.")
-  }
-  
-  if(!is.numeric(data$values)){
-    stop("'values' column in data should be a numerical vector.")
-  }
-  
-  if(!is.null(id_var) && !is.character(id_var)){
-    stop("id_var should be a string specifying a variable in the input data that uniquely identifies each observation.")
-  }
-  # Null testing options
-  
-  theoptions <- c("model free shuffles", "null model fits")
-  
-  if(is.null(null_testing_method) || missing(null_testing_method)){
-    null_testing_method <- "model free shuffles"
-    message("No argument supplied to null_testing_method. Using 'model free shuffles' as default.")
-  }
-  
-  if(length(null_testing_method) != 1){
-    stop("null_testing_method should be a single string of either 'model free shuffles' or 'null model fits'.")
-  }
-  
-  if(null_testing_method %ni% theoptions){
-    stop("null_testing_method should be a single string of either 'model free shuffles' or 'null model fits'.")
-  }
-  
-  if(null_testing_method == "model free shuffles" && pool_empirical_null){
-    stop("'model free shuffles' and pooled empirical null are incompatible (pooled null combines each feature's null into a grand null and features don'tt get a null if 'model free shuffles' is used). Please respecify.")
-  }
-  
-  if(null_testing_method == "model free shuffles" && num_permutations < 1000){
-    message("Null testing method 'model free shuffles' is fast. Consider running more permutations for more reliable results. N = 10000 is recommended.")
-  }
-  
-  # p-value options
-  
-  theoptions_p <- c("empirical", "gaussian")
-  
-  if(is.null(p_value_method) || missing(p_value_method)){
-    p_value_method <- "gaussian"
-    message("No argument supplied to p_value_method Using 'gaussian' as default.")
-  }
-  
-  if(length(p_value_method) != 1){
-    stop("p_value_method should be a single string of either 'empirical' or 'gaussian'.")
-  }
-  
-  if(p_value_method %ni% theoptions_p){
-    stop("p_value_method should be a single string of either 'empirical' or 'gaussian'.")
-  }
+  #------------------------------------------------------------------------
+  #----------------- NOTE: ALL ARG CHECKS ARE PERFORMED IN ----------------
+  #----------------- theft::compute_top_features AS THIS IS ---------------
+  #----------------- JUST A HELPER FUNCTION!!!!!!--------------------------
+  #------------------------------------------------------------------------
   
   #------------- Renaming columns -------------
   
@@ -589,42 +523,6 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
   }
   
   num_classes <- length(unique(data_id$group)) # Get number of classes in the data
-  
-  if(num_classes == 1){
-    stop("Your data only has one class label. At least two are required to performed analysis.")
-  }
-  
-  if(((missing(test_method) || is.null(test_method))) && num_classes == 2){
-    test_method <- "t-test"
-    message("test_method is NULL or missing. Running t-test for 2-class problem.")
-  }
-  
-  if(((missing(test_method) || is.null(test_method))) && num_classes > 2){
-    test_method <- "gaussprRadial"
-    message("test_method is NULL or missing, fitting 'gaussprRadial' by default.")
-  }
-  
-  if(test_method %in% c("t-test", "wilcox", "binomial logistic") && num_classes > 2){
-    stop("t-test, Mann-Whitney-Wilcoxon Test and binomial logistic regression can only be run for 2-class problems.")
-  }
-  
-  # Splits and shuffles
-  
-  if(use_k_fold == TRUE && !is.numeric(num_folds)){
-    stop("num_folds should be a positive integer. 10 folds is recommended.")
-  }
-  
-  if(use_empirical_null == TRUE && !is.numeric(num_permutations)){
-    stop("num_permutations should be a postive integer. A minimum of 50 shuffles is recommended.")
-  }
-  
-  if(use_empirical_null == TRUE && num_permutations < 3){
-    stop("num_permutations should be a positive integer >= 3 for empirical null calculations. A minimum of 50 shuffles is recommended.")
-  }
-  
-  if(use_k_fold == TRUE && num_folds < 1){
-    stop("num_folds should be a positive integer. 10 folds is recommended.")
-  }
   
   #------------- Preprocess data --------------
   
@@ -653,7 +551,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
     classifier_name <- "Mann-Whitney-Wilcoxon Test"
     statistic_name <- "Mann-Whitney-Wilcoxon Test statistic"
     
-  } else if(test_method == "binomial logistic") {
+  } else if(test_method == "BinomialLogistic") {
     
     classifier_name <- "Binomial logistic regression"
     statistic_name <- "Binomial logistic coefficient z-test"
@@ -695,7 +593,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
     
     return(output)
     
-  } else if (test_method == "binomial logistic"){
+  } else if (test_method == "BinomialLogistic"){
     
     gather_binomial_info_safe <- purrr::possibly(gather_binomial_info, otherwise = NULL)
     
@@ -717,7 +615,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
     
     # Very important coffee console message
     
-    if(use_empirical_null & null_testing_method == "null model fits"){
+    if(use_empirical_null & null_testing_method == "ModelFreeShuffles"){
       message("This will take a while. Great reason to go grab a coffee and relax ^_^")
     }
     
@@ -748,7 +646,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
     
     # Run nulls if random shuffles are to be used
     
-    if(null_testing_method == "model free shuffles"){
+    if(null_testing_method == "ModelFreeShuffles"){
       
       # Run random shuffles procedure
       
@@ -759,7 +657,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
       
       nullOuts <- simulate_null_acc(x = x_prep, num_permutations = num_permutations, use_balanced_accuracy) %>%
         dplyr::mutate(category = "Null",
-                      feature = "model free shuffles")
+                      feature = "ModelFreeShuffles")
       
       if(use_k_fold){
         nullOuts <- nullOuts %>%
@@ -772,10 +670,6 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
       }
       
       output <- dplyr::bind_rows(output, nullOuts)
-    }
-    
-    if(return_raw_estimates){
-      return(output)
     }
     
     # Compute statistics for each feature against empirical null distribution
@@ -844,7 +738,7 @@ fit_single_feature_classifier <- function(data, id_var = "id", group_var = "grou
         
       } else{
         
-        if(null_testing_method == "null model fits"){
+        if(null_testing_method == "NullModelFits"){
           
           if(use_balanced_accuracy){
             

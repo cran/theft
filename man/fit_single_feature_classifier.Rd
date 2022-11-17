@@ -13,12 +13,11 @@ fit_single_feature_classifier(
   use_k_fold = FALSE,
   num_folds = 10,
   use_empirical_null = FALSE,
-  null_testing_method = c("model free shuffles", "null model fits"),
+  null_testing_method = c("ModelFreeShuffles", "NullModelFits"),
   p_value_method = c("empirical", "gaussian"),
   num_permutations = 50,
   pool_empirical_null = FALSE,
-  seed = 123,
-  return_raw_estimates = FALSE
+  seed = 123
 )
 }
 \arguments{
@@ -47,8 +46,6 @@ fit_single_feature_classifier(
 \item{pool_empirical_null}{a Boolean specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}}
 
 \item{seed}{fixed number for R's random number generator to ensure reproducibility}
-
-\item{return_raw_estimates}{a Boolean (for testing purposes only -- will break \code{compute_top_features}!!) specifying whether to return the raw main and null model results}
 }
 \value{
 an object of class dataframe containing results
@@ -82,12 +79,11 @@ fit_single_feature_classifier(featMat,
   use_k_fold = TRUE,
   num_folds = 10,
   use_empirical_null = TRUE,
-  null_testing_method = "model free shuffles",
+  null_testing_method = "ModelFreeShuffles",
   p_value_method = "gaussian",
   num_permutations = 50,
   pool_empirical_null = FALSE,
-  seed = 123,
-  return_raw_estimates = FALSE) 
+  seed = 123) 
 }
 
 }

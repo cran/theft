@@ -24,6 +24,13 @@ following:
 devtools::install_github("hendersontrent/theft")
 ```
 
+Please also check out our new paper [Feature-Based Time-Series Analysis
+in R using the theft Package](https://arxiv.org/abs/2208.06146) which
+discusses the motivation and theoretical underpinnings of `theft` and
+walks through all of its functionality using the [Bonn EEG
+dataset](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.061907)
+— a well-studied neuroscience dataset.
+
 ## General purpose
 
 `theft` is a software package for R that facilitates user-friendly
@@ -34,22 +41,22 @@ of existing R and Python packages and lets the user specify which groups
 (or all) of the these features to calculate. The packages which `theft`
 currently ‘steals’ features from include:
 
--   [catch22](https://link.springer.com/article/10.1007/s10618-019-00647-x)
-    (R; [see `Rcatch22` for the native implementation on
-    CRAN](https://github.com/hendersontrent/Rcatch22))
--   [feasts](https://feasts.tidyverts.org) (R)
--   [tsfeatures](https://github.com/robjhyndman/tsfeatures) (R)
--   [Kats](https://facebookresearch.github.io/Kats/) (Python)
--   [tsfresh](https://tsfresh.com) (Python)
--   [TSFEL](https://tsfel.readthedocs.io/en/latest/) (Python)
+- [catch22](https://link.springer.com/article/10.1007/s10618-019-00647-x)
+  (R; [see `Rcatch22` for the native implementation on
+  CRAN](https://github.com/hendersontrent/Rcatch22))
+- [feasts](https://feasts.tidyverts.org) (R)
+- [tsfeatures](https://github.com/robjhyndman/tsfeatures) (R)
+- [Kats](https://facebookresearch.github.io/Kats/) (Python)
+- [tsfresh](https://tsfresh.com) (Python)
+- [TSFEL](https://tsfel.readthedocs.io/en/latest/) (Python)
 
 Note that `Kats`, `tsfresh` and `TSFEL` are Python packages. The R
 package `reticulate` is used to call Python code that uses these
 packages and applies it within the broader *tidy* data philosophy
 embodied by `theft`. At present, depending on the input time series,
-`theft` provides access to &gt;1300 features. Prior to using `theft`
-(only if you want to use the `Kats`, `tsfresh` or `TSFEL` feature sets;
-the R-based sets will run fine) you should have a working Python
+`theft` provides access to \>1300 features. Prior to using `theft` (only
+if you want to use the `Kats`, `tsfresh` or `TSFEL` feature sets; the
+R-based sets will run fine) you should have a working Python
 installation and download `Kats` using the instructions located
 [here](https://facebookresearch.github.io/Kats/), `tsfresh`
 [here](https://tsfresh.com) and/or `TSFEL`
@@ -82,12 +89,20 @@ not all functionality has been copied across to the webtool yet.
 
 ## Citation
 
+if you use `theft` in your own work, please cite both the paper:
+
+T. Henderson and Ben D. Fulcher. [Feature-Based Time-Series Analysis in
+R using the theft Package](https://arxiv.org/abs/2208.06146). arXiv,
+(2022).
+
+and the software (below):
+
 
     To cite package 'theft' in publications use:
 
-      Trent Henderson (2022). theft: Tools for Handling Extraction of
-      Features from Time Series. R package version 0.3.9.6.
-      https://hendersontrent.github.io/theft/
+      Henderson T (2022). _theft: Tools for Handling Extraction of Features
+      from Time Series_. R package version 0.4.1.1,
+      <https://hendersontrent.github.io/theft/>.
 
     A BibTeX entry for LaTeX users is
 
@@ -95,6 +110,6 @@ not all functionality has been copied across to the webtool yet.
         title = {theft: Tools for Handling Extraction of Features from Time Series},
         author = {Trent Henderson},
         year = {2022},
-        note = {R package version 0.3.9.6},
+        note = {R package version 0.4.1.1},
         url = {https://hendersontrent.github.io/theft/},
       }
