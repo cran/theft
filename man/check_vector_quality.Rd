@@ -2,21 +2,19 @@
 % Please edit documentation in R/check_vector_quality.R
 \name{check_vector_quality}
 \alias{check_vector_quality}
-\title{Check data quality of a vector}
+\title{Check for presence of NAs and non-numerics in a vector}
 \usage{
 check_vector_quality(x)
 }
 \arguments{
-\item{x}{input data vector}
+\item{x}{input \code{vector}}
 }
 \value{
-Boolean of whether the data is good to extract features on or not
+\code{Boolean} of whether the data is good to extract features on or not
 }
 \description{
-Check data quality of a vector
+Check for presence of NAs and non-numerics in a vector
 }
-\examples{
-x <- stats::rnorm(10)
-check_vector_quality(x)
-
+\author{
+Trent Henderson
 }

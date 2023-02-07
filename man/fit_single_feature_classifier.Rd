@@ -6,8 +6,6 @@
 \usage{
 fit_single_feature_classifier(
   data,
-  id_var = "id",
-  group_var = "group",
   test_method = "gaussprRadial",
   use_balanced_accuracy = FALSE,
   use_k_fold = FALSE,
@@ -21,71 +19,33 @@ fit_single_feature_classifier(
 )
 }
 \arguments{
-\item{data}{the dataframe containing the raw feature matrix}
+\item{data}{the \code{data.frame} containing the raw feature matrix}
 
-\item{id_var}{a string specifying the ID variable to group data on (if one exists). Defaults to \code{"id"}}
+\item{test_method}{\code{string} specifying the algorithm to use for quantifying class separation. Defaults to \code{"gaussprRadial"}. Should be either \code{"t-test"}, \code{"wilcox"}, or \code{"binomial logistic"} for two-class problems to obtain exact statistics, or a valid \code{caret} classification model for everything else}
 
-\item{group_var}{a string specifying the grouping variable that the data aggregates to. Defaults to \code{"group"}}
+\item{use_balanced_accuracy}{\code{Boolean} specifying whether to use balanced accuracy as the summary metric for caret model training. Defaults to \code{FALSE}}
 
-\item{test_method}{the algorithm to use for quantifying class separation. Defaults to \code{"gaussprRadial"}. Should be either \code{"t-test"}, \code{"wilcox"}, or \code{"binomial logistic"} for two-class problems to obtain exact statistics, or a valid \code{caret} classification model for everything else}
+\item{use_k_fold}{\code{Boolean} specifying whether to use k-fold procedures for generating a distribution of classification accuracy estimates if a \code{caret} model is specified for \code{test_method}. Defaults to \code{ FALSE}}
 
-\item{use_balanced_accuracy}{a Boolean specifying whether to use balanced accuracy as the summary metric for caret model training. Defaults to \code{FALSE}}
+\item{num_folds}{\code{integer} specifying the number of k-folds to perform if \code{use_k_fold} is set to \code{TRUE}. Defaults to \code{10}}
 
-\item{use_k_fold}{a Boolean specifying whether to use k-fold procedures for generating a distribution of classification accuracy estimates if a \code{caret} model is specified for \code{test_method}. Defaults to \code{ FALSE}}
+\item{use_empirical_null}{\code{Boolean} specifying whether to use empirical null procedures to compute p-values if a \code{caret} model is specified for \code{test_method}. Defaults to \code{FALSE}}
 
-\item{num_folds}{an integer specifying the number of k-folds to perform if \code{use_k_fold} is set to \code{TRUE}. Defaults to \code{10}}
+\item{null_testing_method}{\code{string} specifying the type of statistical method to use to calculate p-values. Defaults to \code{model free shuffles}}
 
-\item{use_empirical_null}{a Boolean specifying whether to use empirical null procedures to compute p-values if a \code{caret} model is specified for \code{test_method}. Defaults to \code{FALSE}}
+\item{p_value_method}{\code{string} specifying the method of calculating p-values. Defaults to \code{"empirical"}}
 
-\item{null_testing_method}{a string specifying the type of statistical method to use to calculate p-values. Defaults to \code{model free shuffles}}
+\item{num_permutations}{\code{integer} specifying the number of class label shuffles to perform if \code{use_empirical_null} is \code{TRUE}. Defaults to \code{50}}
 
-\item{p_value_method}{a string specifying the method of calculating p-values. Defaults to \code{"empirical"}}
+\item{pool_empirical_null}{\code{Boolean} specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}}
 
-\item{num_permutations}{an integer specifying the number of class label shuffles to perform if \code{use_empirical_null} is \code{TRUE}. Defaults to \code{50}}
-
-\item{pool_empirical_null}{a Boolean specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}}
-
-\item{seed}{fixed number for R's random number generator to ensure reproducibility}
+\item{seed}{\code{integer} denoting a fixed number for R's random number generator to ensure reproducibility}
 }
 \value{
-an object of class dataframe containing results
+an object of class \code{data.frame}
 }
 \description{
 Fit a classifier to feature matrix to extract top performers
-}
-\examples{
-\donttest{
-featMat <- calculate_features(data = simData, 
-  id_var = "id", 
-  time_var = "timepoint", 
-  values_var = "values", 
-  group_var = "process", 
-  feature_set = "catch22",
-  seed = 123)
-  
-# Mimic machinery of theft::compute_top_features
-# which calls fit_single_feature_classifier and
-# does these operations prior
-  
-featMat$group <- make.names(featMat$group)
-featMat$group <- as.factor(featMat$group)
-featMat$values <- as.numeric(featMat$values)
-  
-fit_single_feature_classifier(featMat,
-  id_var = "id",
-  group_var = "group",
-  test_method = "gaussprRadial",
-  use_balanced_accuracy = FALSE,
-  use_k_fold = TRUE,
-  num_folds = 10,
-  use_empirical_null = TRUE,
-  null_testing_method = "ModelFreeShuffles",
-  p_value_method = "gaussian",
-  num_permutations = 50,
-  pool_empirical_null = FALSE,
-  seed = 123) 
-}
-
 }
 \author{
 Trent Henderson

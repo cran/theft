@@ -4,10 +4,8 @@ test_that("single feature plots", {
   
   skip_on_cran()
   
-  expect_equal(10,
-               length(unique(compute_top_features(feature_matrix, 
-                                                  id_var = "id", 
-                                                  group_var = "group",
+  expect_equal(3,
+               length(compute_top_features(feature_matrix, 
                                                   num_features = 10, 
                                                   normalise_violin_plots = FALSE,
                                                   method = "RobustSigmoid",
@@ -21,16 +19,14 @@ test_that("single feature plots", {
                                                   null_testing_method = "ModelFreeShuffles",
                                                   num_permutations = 10,
                                                   p_value_method = "empirical",
-                                                  pool_empirical_null = FALSE)$ViolinPlots$data$names)))
+                                                  pool_empirical_null = FALSE)))
 })
 
 test_that("single feature null method", {
   
   skip_on_cran()
   
-  expect_equal(nrow(compute_top_features(feature_matrix, 
-                                         id_var = "id", 
-                                         group_var = "group",
+  expect_equal(length(compute_top_features(feature_matrix, 
                                          num_features = 10, 
                                          normalise_violin_plots = FALSE,
                                          method = "RobustSigmoid",
@@ -44,10 +40,9 @@ test_that("single feature null method", {
                                          null_testing_method = "ModelFreeShuffles",
                                          num_permutations = 10,
                                          p_value_method = "empirical",
-                                         pool_empirical_null = FALSE)$ResultsTable),
-               nrow(compute_top_features(feature_matrix, 
-                                         id_var = "id", 
-                                         group_var = "group",
+                                         pool_empirical_null = FALSE)),
+               
+               length(compute_top_features(feature_matrix, 
                                          num_features = 10, 
                                          normalise_violin_plots = FALSE,
                                          method = "RobustSigmoid",
@@ -58,10 +53,10 @@ test_that("single feature null method", {
                                          use_k_fold = FALSE,
                                          num_folds = 10,
                                          use_empirical_null =  TRUE,
-                                         null_testing_method = "null model fits",
+                                         null_testing_method = "NullModelFits",
                                          num_permutations = 10,
                                          p_value_method = "gaussian",
-                                         pool_empirical_null = FALSE)$ResultsTable))
+                                         pool_empirical_null = FALSE)))
 })
 
 test_that("single feature balanced accuracy", {
@@ -70,8 +65,6 @@ test_that("single feature balanced accuracy", {
   
   expect_equal(7,
                ncol(compute_top_features(feature_matrix, 
-                                         id_var = "id", 
-                                         group_var = "group",
                                          num_features = 10, 
                                          normalise_violin_plots = FALSE,
                                          method = "RobustSigmoid",
@@ -89,8 +82,6 @@ test_that("single feature balanced accuracy", {
   
   expect_equal(5,
                ncol(compute_top_features(feature_matrix, 
-                                         id_var = "id", 
-                                         group_var = "group",
                                          num_features = 10, 
                                          normalise_violin_plots = FALSE,
                                          method = "RobustSigmoid",
@@ -110,8 +101,6 @@ test_that("single feature balanced accuracy", {
 test_that("single feature binary options", {
   
   t_test_ref <- compute_top_features(feature_matrix, 
-                                     id_var = "id", 
-                                     group_var = "group",
                                      num_features = 10, 
                                      normalise_violin_plots = FALSE,
                                      method = "RobustSigmoid",
@@ -122,8 +111,6 @@ test_that("single feature binary options", {
   
   expect_equal(length(unique(t_test_ref$ResultsTable$feature)),
                length(unique(compute_top_features(feature_matrix, 
-                                                  id_var = "id", 
-                                                  group_var = "group",
                                                   num_features = 10, 
                                                   normalise_violin_plots = FALSE,
                                                   method = "RobustSigmoid",
@@ -134,8 +121,6 @@ test_that("single feature binary options", {
   
   expect_equal(length(unique(t_test_ref$ResultsTable$feature)),
                length(unique(compute_top_features(feature_matrix, 
-                                                  id_var = "id", 
-                                                  group_var = "group",
                                                   num_features = 10, 
                                                   normalise_violin_plots = FALSE,
                                                   method = "RobustSigmoid",

@@ -1,8 +1,8 @@
 Package: theft
 Type: Package
 Title: Tools for Handling Extraction of Features from Time Series
-Version: 0.4.1.1
-Date: 2022-11-15
+Version: 0.4.2.3
+Date: 2023-02-07
 Authors@R: c(
   person("Trent", "Henderson", email = "then6675@uni.sydney.edu.au", role = c("cre", "aut")),
   person("Annie", "Bryant", role = "ctb", comment = "Balanced classification accuracy")
@@ -24,15 +24,15 @@ LazyData: true
 Depends: R (>= 3.5.0)
 Imports: rlang, stats, dplyr, ggplot2, tidyr, reshape2, scales, tibble,
         purrr, broom, tsibble, fabletools, tsfeatures, feasts,
-        Rcatch22, reticulate, Rtsne, R.matlab, plotly, caret, janitor
+        Rcatch22, reticulate, Rtsne, R.matlab, caret, janitor
 Suggests: lifecycle, cachem, bslib, knitr, markdown, rmarkdown,
         pkgdown, testthat
 RoxygenNote: 7.2.2
 VignetteBuilder: knitr
 URL: https://hendersontrent.github.io/theft/
 NeedsCompilation: no
-Packaged: 2022-11-17 08:03:58 UTC; User
+Packaged: 2023-02-07 05:12:46 UTC; User
 Author: Trent Henderson [cre, aut],
   Annie Bryant [ctb] (Balanced classification accuracy)
 Repository: CRAN
-Date/Publication: 2022-11-17 15:20:02 UTC
+Date/Publication: 2023-02-07 05:30:02 UTC

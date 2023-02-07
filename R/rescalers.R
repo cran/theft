@@ -1,11 +1,11 @@
-#' This function rescales a vector of numerical values into the unit interval [0,1]
+#' Rescales a numeric vector into the unit interval [0,1]
+#' 
+#' \eqn{z_{i} = \frac{x_{i} - \text{min}(\mathbf{x})}{\text{max}(\mathbf{x}) - \text{min}(\mathbf{x})}}
+#' 
 #' @importFrom scales rescale
-#' @param x a numeric vector, preferably of feature values computed by other \code{theft} package functions
-#' @return x a numeric vector, rescaled into the \code{[0,1]} unit interval
+#' @param x \code{numeric vector}
+#' @return \code{numeric vector}
 #' @author Trent Henderson
-#' @export
-#' @examples
-#' minmax_scaler(stats::rnorm(10))
 #'
 
 minmax_scaler <- function(x){
@@ -15,15 +15,16 @@ minmax_scaler <- function(x){
   return(x_new)
 }
 
-#' This function rescales a vector of numerical values into z-scores
+#' Rescales a numeric vector into z-scores and then into the unit interval [0,1]
+#' 
+#' \eqn{z_{i} = \frac{x_{i} - \mu}{\sigma}}
+#' 
 #' @importFrom stats sd
-#' @param x a numeric vector, preferably of feature values computed by other \code{theft} package functions
-#' @param unitInt Booelan whether to rescale outputs into unit interval \code{[0,1]}. Defaults to \code{TRUE}
-#' @return x a numeric vector, rescaled into z-scores
+#' @importFrom scales rescale
+#' @param x \code{numeric vector}
+#' @param unitInt \code{Boolean} whether to rescale into unit interval \code{[0,1]}. Defaults to \code{TRUE}
+#' @return \code{numeric} vector
 #' @author Trent Henderson
-#' @export
-#' @examples
-#' zscore_scaler(stats::rnorm(10))
 #'
 
 zscore_scaler <- function(x, unitInt = TRUE){
@@ -38,16 +39,16 @@ zscore_scaler <- function(x, unitInt = TRUE){
   return(x_new)
 }
 
-#' This function rescales a vector of numerical values with a Sigmoidal transformation
-#' @importFrom scales rescale
+#' Rescales a numeric vector using a Sigmoidal transformation
+#' 
+#' \eqn{z_{i} = \left[1 + \exp(-\frac{x_{i} - \mu}{\sigma})\right]^{-1}}
+#' 
 #' @importFrom stats sd
-#' @param x a numeric vector, preferably of feature values computed by other \code{theft} package functions
-#' @param unitInt Booelan whether to rescale Sigmoidal outputs into unit interval \code{[0,1]}. Defaults to \code{TRUE}
-#' @return x a numeric rescaled vector
+#' @importFrom scales rescale
+#' @param x \code{numeric vector}
+#' @param unitInt \code{Boolean} whether to rescale into unit interval \code{[0,1]}. Defaults to \code{TRUE}
+#' @return \code{numeric vector}
 #' @author Trent Henderson
-#' @export
-#' @examples
-#' sigmoid_scaler(stats::rnorm(10))
 #'
 
 sigmoid_scaler <- function(x, unitInt = TRUE){
@@ -62,17 +63,17 @@ sigmoid_scaler <- function(x, unitInt = TRUE){
   return(x_new)
 }
 
-#' This function rescales a vector of numerical values with an outlier-robust Sigmoidal transformation
+#' Rescales a numeric vector using an outlier-robust Sigmoidal transformation and then into the unit interval [0,1]
+#' 
+#' \eqn{z_{i} = \left[1 + \exp\left(-\frac{x_{i} - \text{median}(\mathbf{x})}{\text{IQR}(\mathbf{x})/{1.35}}\right)\right]^{-1}}
+#' 
+#' @importFrom stats median IQR
 #' @importFrom scales rescale
-#' @importFrom stats median
-#' @importFrom stats IQR
-#' @param x a numeric vector, preferably of feature values computed by other \code{theft} package functions
-#' @param unitInt Booelan whether to rescale Sigmoidal outputs into unit interval \code{[0,1]}. Defaults to \code{TRUE}
-#' @return x a numeric rescaled vector
+#' @param x \code{numeric vector}
+#' @param unitInt \code{Boolean} whether to rescale into unit interval \code{[0,1]}. Defaults to \code{TRUE}
+#' @return \code{numeric vector}
+#' @references Fulcher, Ben D., Little, Max A., and Jones, Nick S. Highly Comparative Time-Series Analysis: The Empirical Structure of Time Series and Their Methods. Journal of The Royal Society Interface 10(83), (2013).
 #' @author Trent Henderson
-#' @export
-#' @examples
-#' robustsigmoid_scaler(stats::rnorm(10))
 #'
 
 robustsigmoid_scaler <- function(x, unitInt = TRUE){

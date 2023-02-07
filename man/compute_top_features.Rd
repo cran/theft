@@ -6,8 +6,6 @@
 \usage{
 compute_top_features(
   data,
-  id_var = "id",
-  group_var = "group",
   num_features = 40,
   normalise_violin_plots = FALSE,
   method = c("z-score", "Sigmoid", "RobustSigmoid", "MinMax"),
@@ -27,44 +25,40 @@ compute_top_features(
 )
 }
 \arguments{
-\item{data}{the dataframe containing the raw feature matrix}
+\item{data}{the \code{feature_calculations} object containing the raw feature matrix produced by \code{calculate_features}}
 
-\item{id_var}{a string specifying the ID variable to group data on (if one exists). Defaults to \code{"id"}}
+\item{num_features}{\code{integer} denoting the number of top features to retain and explore. Defaults to \code{40}}
 
-\item{group_var}{a string specifying the grouping variable that the data aggregates to. Defaults to \code{"group"}}
+\item{normalise_violin_plots}{\code{Boolean} of whether to normalise features before plotting. Defaults to \code{FALSE}}
 
-\item{num_features}{the number of top features to retain and explore. Defaults to \code{40}}
+\item{method}{a rescaling/normalising method to apply to violin plots. Defaults to \code{"z-score"}}
 
-\item{normalise_violin_plots}{a Boolean of whether to normalise features before plotting. Defaults to \code{FALSE}}
+\item{cor_method}{\code{string} denoting the correlation method to use. Defaults to \code{"pearson"}}
 
-\item{method}{a rescaling/normalising method to apply to violin plots. Defaults to \code{"RobustSigmoid"}}
+\item{test_method}{\code{string} specifying the algorithm to use for quantifying class separation. Defaults to \code{"gaussprRadial"}. Should be either \code{"t-test"}, \code{"wilcox"}, or \code{"binomial logistic"} for two-class problems to obtain exact statistics, or a valid \code{caret} classification model for everything else}
 
-\item{cor_method}{the correlation method to use. Defaults to \code{"pearson"}}
+\item{clust_method}{\code{string} denoting the hierarchical clustering method to use for the pairwise correlation plot. Defaults to \code{"average"}}
 
-\item{test_method}{the algorithm to use for quantifying class separation. Defaults to \code{"gaussprRadial"}}
+\item{use_balanced_accuracy}{\code{Boolean} specifying whether to use balanced accuracy as the summary metric for caret model training. Defaults to \code{FALSE}}
 
-\item{clust_method}{the hierarchical clustering method to use for the pairwise correlation plot. Defaults to \code{"average"}}
+\item{use_k_fold}{\code{Boolean} specifying whether to use k-fold procedures for generating a distribution of classification accuracy estimates if a \code{caret} model is specified for \code{test_method}. Defaults to \code{ FALSE}}
 
-\item{use_balanced_accuracy}{a Boolean specifying whether to use balanced accuracy as the summary metric for caret model training. Defaults to \code{FALSE}}
+\item{num_folds}{\code{integer} specifying the number of k-folds to perform if \code{use_k_fold} is set to \code{TRUE}. Defaults to \code{10}}
 
-\item{use_k_fold}{a Boolean specifying whether to use k-fold procedures for generating a distribution of classification accuracy estimates if a \code{caret} model is specified for \code{test_method}. Defaults to \code{ FALSE}}
+\item{use_empirical_null}{\code{Boolean} specifying whether to use empirical null procedures to compute p-values if a \code{caret} model is specified for \code{test_method}. Defaults to \code{FALSE}}
 
-\item{num_folds}{an integer specifying the number of k-folds to perform if \code{use_k_fold} is set to \code{TRUE}. Defaults to \code{10}}
+\item{null_testing_method}{\code{string} specifying the type of statistical method to use to calculate p-values. Defaults to \code{"ModelFreeShuffles"}}
 
-\item{use_empirical_null}{a Boolean specifying whether to use empirical null procedures to compute p-values if a \code{caret} model is specified for \code{test_method}. Defaults to \code{FALSE}}
+\item{p_value_method}{\code{string} specifying the method of calculating p-values. Defaults to \code{"empirical"}}
 
-\item{null_testing_method}{a string specifying the type of statistical method to use to calculate p-values. Defaults to \code{model free shuffles}}
+\item{num_permutations}{\code{integer} specifying the number of class label shuffles to perform if \code{use_empirical_null} is \code{TRUE}. Defaults to \code{50}}
 
-\item{p_value_method}{a string specifying the method of calculating p-values. Defaults to \code{"empirical"}}
+\item{pool_empirical_null}{\code{Boolean} specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}}
 
-\item{num_permutations}{an integer specifying the number of class label shuffles to perform if \code{use_empirical_null} is \code{TRUE}. Defaults to \code{50}}
-
-\item{pool_empirical_null}{a Boolean specifying whether to use the pooled empirical null distribution of all features or each features' individual empirical null distribution if a \code{caret} model is specified for \code{test_method} use_empirical_null is \code{TRUE}. Defaults to \code{FALSE}}
-
-\item{seed}{fixed number for R's random number generator to ensure reproducibility}
+\item{seed}{\code{integer} denoting a fixed number for R's random number generator to ensure reproducibility}
 }
 \value{
-an object of class list containing a dataframe of results, a feature x feature matrix plot, and a violin plot
+an object of class \code{list} containing a \code{data.frame} of results, a \code{ggplot} feature x feature matrix plot, and a \code{ggplot} violin plot
 }
 \description{
 Return an object containing results from top-performing features on a classification task
@@ -80,8 +74,6 @@ featMat <- calculate_features(data = simData,
   seed = 123)
   
 compute_top_features(featMat,
-  id_var = "id",
-  group_var = "group",
   num_features = 10,
   normalise_violin_plots = FALSE,
   method = "RobustSigmoid",
