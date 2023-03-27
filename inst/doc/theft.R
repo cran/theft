@@ -79,25 +79,19 @@ plot(feature_matrix, type = "cor")
 #                                  clust_method = "average",
 #                                  use_balanced_accuracy = FALSE,
 #                                  use_k_fold = TRUE,
-#                                  num_folds = 10,
+#                                  num_folds = 3,
 #                                  use_empirical_null =  TRUE,
 #                                  null_testing_method = "ModelFreeShuffles",
 #                                  p_value_method = "gaussian",
-#                                  num_permutations = 10,
+#                                  num_permutations = 3,
 #                                  pool_empirical_null = FALSE,
 #                                  seed = 123)
 
-## ---- message = FALSE, warning = FALSE, echo = FALSE--------------------------
-load("outputs.rda")
+## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
+#  print(outputs$FeatureFeatureCorrelationPlot)
 
-## ---- message = FALSE, warning = FALSE----------------------------------------
-head(outputs$ResultsTable)
-
-## ---- message = FALSE, warning = FALSE----------------------------------------
-print(outputs$FeatureFeatureCorrelationPlot)
-
-## ---- message = FALSE, warning = FALSE----------------------------------------
-print(outputs$ViolinPlots)
+## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
+#  print(outputs$ViolinPlots)
 
 ## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
 #  multi_outputs <- fit_multi_feature_classifier(feature_matrix,
@@ -105,24 +99,15 @@ print(outputs$ViolinPlots)
 #                                                test_method = "svmLinear",
 #                                                use_balanced_accuracy = TRUE,
 #                                                use_k_fold = TRUE,
-#                                                num_folds = 10,
+#                                                num_folds = 3,
 #                                                use_empirical_null =  TRUE,
 #                                                null_testing_method = "ModelFreeShuffles",
 #                                                p_value_method = "gaussian",
-#                                                num_permutations = 10,
+#                                                num_permutations = 3,
 #                                                seed = 123)
 
-## ---- message = FALSE, warning = FALSE, echo = FALSE--------------------------
-load("multi_outputs.rda")
-
-## ---- message = FALSE, warning = FALSE----------------------------------------
-print(multi_outputs$FeatureSetResultsPlot)
-
-## ---- message = FALSE, warning = FALSE----------------------------------------
-head(multi_outputs$TestStatistics)
-
-## ---- message = FALSE, warning = FALSE----------------------------------------
-head(multi_outputs$RawClassificationResults)
+## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
+#  print(multi_outputs$FeatureSetResultsPlot)
 
 ## ---- message = FALSE, warning = FALSE, eval = FALSE--------------------------
 #  d2 <- process_hctsa_file("https://cloudstor.aarnet.edu.au/plus/s/6sRD6IPMJyZLNlN/download")
