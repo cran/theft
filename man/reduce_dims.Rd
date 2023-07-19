@@ -8,20 +8,23 @@ reduce_dims(
   data,
   method = c("z-score", "Sigmoid", "RobustSigmoid", "MinMax"),
   low_dim_method = c("PCA", "t-SNE"),
-  perplexity = 30,
-  seed = 123
+  perplexity = 10,
+  seed = 123,
+  ...
 )
 }
 \arguments{
 \item{data}{the \code{feature_calculations} object containing the raw feature matrix produced by \code{calculate_features}}
 
-\item{method}{a rescaling/normalising method to apply. Defaults to \code{"z-score"}}
+\item{method}{\code{character} specifying a rescaling/normalising method to apply. Defaults to \code{"z-score"}}
 
-\item{low_dim_method}{the low dimensional embedding method to use. Defaults to \code{"PCA"}}
+\item{low_dim_method}{\code{character} specifying the low dimensional embedding method to use. Defaults to \code{"PCA"}}
 
-\item{perplexity}{the perplexity hyperparameter to use if t-SNE algorithm is selected. Defaults to \code{30}}
+\item{perplexity}{\code{integer} denoting the perplexity hyperparameter to use if \code{low_dim_method} is \code{"t-SNE"}. Defaults to \code{10}}
 
-\item{seed}{fixed number for R's random number generator to ensure reproducibility}
+\item{seed}{\code{integer} to fix R's random number generator to ensure reproducibility. Defaults to \code{123}}
+
+\item{...}{arguments to be passed to either \code{stats::prcomp} or \code{Rtsne::Rtsne} depending on whether \code{"low_dim_method"} is \code{"PCA"} or \code{"t-SNE"}}
 }
 \value{
 object of class \code{low_dimension}
