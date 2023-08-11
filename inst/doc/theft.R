@@ -49,14 +49,24 @@ head(feature_list)
 plot(feature_matrix, type = "quality")
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-normed <- normalise(feature_matrix, method = "z-score")
+normed <- normalise(feature_matrix, norm_method = "z-score", unit_int = FALSE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-plot(feature_matrix, type = "matrix")
+plot(feature_matrix, type = "matrix", norm_method = "RobustSigmoid")
+
+## ---- message = FALSE, warning = FALSE----------------------------------------
+plot(feature_matrix, type = "violin", 
+     feature_names = c("CO_f1ecac", "PD_PeriodicityWang_th0_01"))
+
+## ---- eval = FALSE------------------------------------------------------------
+#  plot(feature_matrix, type = "violin",
+#       feature_names = c("CO_f1ecac", "PD_PeriodicityWang_th0_01"),
+#       size = 0.7, alpha = 0.9)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 low_dim <- reduce_dims(feature_matrix, 
-                       method = "RobustSigmoid", 
+                       norm_method = "RobustSigmoid", 
+                       unit_int = TRUE,
                        low_dim_method = "PCA", 
                        seed = 123)
 
@@ -65,7 +75,8 @@ plot(low_dim)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 low_dim2 <- reduce_dims(feature_matrix, 
-                        method = "RobustSigmoid", 
+                        norm_method = "RobustSigmoid", 
+                        unit_int = TRUE,
                         low_dim_method = "t-SNE", 
                         perplexity = 10,
                         seed = 123)
@@ -74,7 +85,8 @@ plot(low_dim2, show_covariance = FALSE)
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  low_dim3 <- reduce_dims(feature_matrix,
-#                          method = "RobustSigmoid",
+#                          norm_method = "RobustSigmoid",
+#                          unit_int = TRUE,
 #                          low_dim_method = "t-SNE",
 #                          perplexity = 10,
 #                          seed = 123,
@@ -88,63 +100,74 @@ plot(feature_matrix, type = "cor")
 #  feature_matrix_filt <- filter_duplicates(feature_matrix, preference = "feasts")
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-feature_classifiers <- tsfeature_classifier(feature_matrix, by_set = FALSE, n_resamples = 5, use_null = TRUE)
+feature_classifiers <- tsfeature_classifier(feature_matrix, 
+                                            by_set = FALSE, 
+                                            n_resamples = 5, 
+                                            use_null = TRUE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 myclassifier <- function(formula, data){
-  mod <- e1071::svm(formula, data = data, kernel = "radial", scale = FALSE, probability = TRUE)
+  mod <- e1071::svm(formula, data = data, kernel = "radial", scale = FALSE, 
+                    probability = TRUE)
 }
 
-feature_classifiers_radial <- tsfeature_classifier(feature_matrix, classifier = myclassifier, by_set = FALSE, n_resamples = 5, use_null = TRUE)
+feature_classifiers_radial <- tsfeature_classifier(feature_matrix, 
+                                                   classifier = myclassifier, 
+                                                   by_set = FALSE, 
+                                                   n_resamples = 5, 
+                                                   use_null = TRUE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-feature_vs_null <- compare_features(feature_classifiers, by_set = FALSE, hypothesis = "null")
+feature_vs_null <- compare_features(feature_classifiers, 
+                                    by_set = FALSE, 
+                                    hypothesis = "null")
+
 head(feature_vs_null)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-pairwise_features <- compare_features(feature_classifiers, by_set = FALSE, hypothesis = "pairwise")
+pairwise_features <- compare_features(feature_classifiers, 
+                                      by_set = FALSE, 
+                                      hypothesis = "pairwise", 
+                                      p_adj = "holm")
+
 head(pairwise_features)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 top_10 <- feature_vs_null %>% 
-  dplyr::slice_min(p_value_adj, n = 10) %>% 
-  dplyr::select(c(method, original_names, p_value_adj))
+  dplyr::slice_min(p.value, n = 10) %>% 
+  dplyr::select(c(feature_set, original_names, p.value))
 
 feature_matrix_filt <- feature_matrix[[1]] %>% 
-  dplyr::filter(method %in% top_10$method & names %in% top_10$original_names)
+  dplyr::filter(feature_set %in% top_10$feature_set & names %in% top_10$original_names)
 
-feature_matrix_filt <- structure(list(feature_matrix_filt), class = "feature_calculations")
+feature_matrix_filt <- structure(list(feature_matrix_filt), 
+                                 class = "feature_calculations")
+
 plot(feature_matrix_filt, type = "cor")
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-feature_matrix_filt[[1]] %>%
-  ggplot2::ggplot(ggplot2::aes(x = group, y = values, colour = group)) +
-  ggplot2::geom_violin() +
-  ggplot2::geom_point(size = 1, alpha = 0.9, position = ggplot2::position_jitter(w = 0.05)) +
-  ggplot2::labs(x = "Class",
-                y = "Value") +
-  ggplot2::scale_colour_brewer(palette = "Dark2") +
-  ggplot2::theme_bw() +
-  ggplot2::theme(legend.position = "none",
-                 panel.grid.minor = ggplot2::element_blank(),
-                 strip.background = ggplot2::element_blank(),
-                 axis.text.x = ggplot2::element_text(angle = 90)) +
-  ggplot2::facet_wrap(~ names, ncol = 2, scales = "free_y")
+plot(feature_matrix_filt, 
+     type = "violin", 
+     feature_names = top_10$original_names)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-set_classifiers <- tsfeature_classifier(feature_matrix, by_set = TRUE, n_resamples = 5, use_null = TRUE)
+calculate_interval(feature_classifiers, by_set = FALSE)
+
+## ---- message = FALSE, warning = FALSE----------------------------------------
+set_classifiers <- tsfeature_classifier(feature_matrix, 
+                                        by_set = TRUE, 
+                                        n_resamples = 5, 
+                                        use_null = TRUE)
+
 head(set_classifiers)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-set_classifiers$ClassificationResults %>%
-  dplyr::filter(model_type == "Main") %>% 
-  dplyr::group_by(method) %>%
-  dplyr::summarise(mu = mean(accuracy),
-                   lower = mu - (1 * sd(accuracy)),
-                   upper = mu + (1 * sd(accuracy))) %>%
-  dplyr::ungroup() %>%
-  ggplot2::ggplot(ggplot2::aes(x = reorder(method, -mu), y = mu, colour = method)) +
-  ggplot2::geom_errorbar(ggplot2::aes(ymin = lower, ymax = upper)) +
+interval_calcs <- calculate_interval(set_classifiers)
+
+interval_calcs %>%
+  ggplot2::ggplot(ggplot2::aes(x = reorder(feature_set, -.mean), y = .mean, 
+                               colour = feature_set)) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = .lower, ymax = .upper)) +
   ggplot2::geom_point(size = 5) +
   ggplot2::labs(x = "Feature set",
                 y = "Classification accuracy") +
