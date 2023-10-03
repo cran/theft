@@ -11,7 +11,8 @@
 #' @param data the \code{feature_calculations} object containing the raw feature matrix produced by \code{calculate_features}
 #' @param norm_method \code{character} denoting the rescaling/normalising method to apply. Can be one of \code{"z-score"}, \code{"Sigmoid"}, \code{"RobustSigmoid"}, or \code{"MinMax"}. Defaults to \code{"z-score"}
 #' @param unit_int \code{Boolean} whether to rescale into unit interval \code{[0,1]} after applying normalisation method. Defaults to \code{FALSE}
-#' @param low_dim_method \code{character} specifying the low dimensional embedding method to use. Defaults to \code{"PCA"}
+#' @param low_dim_method \code{character} specifying the low dimensional embedding method to use. Can be one of \code{"PCA"} or \code{"tSNE"}. Defaults to \code{"PCA"}
+#' @param na_removal \code{character} defining the way to deal with NAs produced during feature calculation. Can be one of \code{"feature"} or \code{"sample"}. \code{"feature"} removes all features that produced any NAs in any sample, keeping the number of samples the same. \code{"sample"} omits all samples that produced at least one NA. Defaults to \code{"feature"}
 #' @param perplexity \code{integer} denoting the perplexity hyperparameter to use if \code{low_dim_method} is \code{"t-SNE"}. Defaults to \code{10}
 #' @param seed \code{integer} to fix R's random number generator to ensure reproducibility. Defaults to \code{123}
 #' @param ... arguments to be passed to either \code{stats::prcomp} or \code{Rtsne::Rtsne} depending on whether \code{"low_dim_method"} is \code{"PCA"} or \code{"t-SNE"}
@@ -20,13 +21,20 @@
 #' @export
 #' 
 
-reduce_dims <- function(data, norm_method = c("z-score", "Sigmoid", "RobustSigmoid", "MinMax"), unit_int = FALSE,
-                        low_dim_method = c("PCA", "t-SNE"), perplexity = 10, seed = 123, ...){
+reduce_dims <- function(data, norm_method = c("zScore", "Sigmoid", "RobustSigmoid", "MinMax"), unit_int = FALSE,
+                        low_dim_method = c("PCA", "tSNE"), na_removal = c("feature","sample"), perplexity = 10, seed = 123, ...){
 
   stopifnot(inherits(data, "feature_calculations") == TRUE)
   norm_method <- match.arg(norm_method)
+  
+  if(norm_method == "t-SNE"){
+    norm_method <- "tSNE" # Old version from {theft}
+    rlang::warn("low_dim_method 't-SNE' was recently deprecated in favour of 'tSNE'.", .frequency = "once", .frequency_id = "reduce_dims")
+  }
+  
   low_dim_method <- match.arg(low_dim_method)
-
+  na_removal <- match.arg(na_removal)
+    
   #------------- Normalise data -------------------
 
   normed <- data[[1]] %>%
@@ -42,12 +50,38 @@ reduce_dims <- function(data, norm_method = c("z-score", "Sigmoid", "RobustSigmo
   #------------- Perform low dim ----------------------
   
   # Produce matrix
-  
+    
   wide_data <- normed %>%
     tidyr::pivot_wider(id_cols = "id", names_from = "names", values_from = "values") %>%
-    tibble::column_to_rownames(var = "id") %>%
-    tidyr::drop_na()
+      tibble::column_to_rownames(var = "id")
   
+  # Filter data
+  
+  if(na_removal == "feature"){
+    wide_data <- wide_data %>%
+      dplyr::select(where(~!any(is.na(.))))
+  } else{
+    wide_data <- wide_data %>%
+      tidyr::drop_na()
+  }
+
+  # Report omitted features/samples
+
+    n_features <- length(unique(normed$names))
+    n_samples <- length(unique(normed$id))
+
+    n_features_after <- ncol(wide_data)
+    n_samples_after <- nrow(wide_data)
+
+    n_features_omitted <- n_features - n_features_after
+    n_samples_omitted <- n_samples - n_samples_after
+
+    if (n_features_omitted > 0) {message(paste(n_features_omitted, "features omitted due to NAs", sep = " "))}
+
+    if (n_samples_omitted > 0) {message(paste(n_samples_omitted, "samples omitted due to NAs", sep = " "))}
+    
+  # Perform dimension reduction
+    
   if(low_dim_method == "PCA"){
     
     # PCA calculation

@@ -49,7 +49,7 @@ head(feature_list)
 plot(feature_matrix, type = "quality")
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
-normed <- normalise(feature_matrix, norm_method = "z-score", unit_int = FALSE)
+normed <- normalise(feature_matrix, norm_method = "zScore", unit_int = FALSE)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 plot(feature_matrix, type = "matrix", norm_method = "RobustSigmoid")
@@ -77,7 +77,7 @@ plot(low_dim)
 low_dim2 <- reduce_dims(feature_matrix, 
                         norm_method = "RobustSigmoid", 
                         unit_int = TRUE,
-                        low_dim_method = "t-SNE", 
+                        low_dim_method = "tSNE", 
                         perplexity = 10,
                         seed = 123)
 
@@ -87,7 +87,7 @@ plot(low_dim2, show_covariance = FALSE)
 #  low_dim3 <- reduce_dims(feature_matrix,
 #                          norm_method = "RobustSigmoid",
 #                          unit_int = TRUE,
-#                          low_dim_method = "t-SNE",
+#                          low_dim_method = "tSNE",
 #                          perplexity = 10,
 #                          seed = 123,
 #                          max_iter = 5000,
@@ -97,7 +97,7 @@ plot(low_dim2, show_covariance = FALSE)
 plot(feature_matrix, type = "cor")
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  feature_matrix_filt <- filter_duplicates(feature_matrix, preference = "feasts")
+#  feature_matrix_filt <- filter_duplicates(feature_matrix, seed = 123)
 
 ## ---- message = FALSE, warning = FALSE----------------------------------------
 feature_classifiers <- tsfeature_classifier(feature_matrix, 
