@@ -12,7 +12,7 @@
 
 <meta name="author" content="Trent Henderson" />
 
-<meta name="date" content="2024-03-11" />
+<meta name="date" content="2024-10-03" />
 
 <title>Introduction to theft</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to theft</h1>
 <h4 class="author">Trent Henderson</h4>
-<h4 class="date">2024-03-11</h4>
+<h4 class="date">2024-10-03</h4>
 
 
 <div id="TOC">
@@ -365,7 +365,7 @@ interpreting, and visualising time-series features</a></li>
 </ul>
 </div>
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(theft)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(theft)</span></code></pre></div>
 <div id="purpose" class="section level2">
 <h2>Purpose</h2>
 <p><code>theft</code> enables the standardised calculation of
@@ -378,16 +378,16 @@ user-supplied features.</p>
 comes standard with <code>theft</code> called <code>simData</code>. This
 dataset contains a collection of randomly generated time series for six
 different types of processes. The dataset can be accessed via:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>theft<span class="sc">::</span>simData</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>theft<span class="sc">::</span>simData</span></code></pre></div>
 <p>The data follows the following structure:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(simData)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                      values timepoint               id        process</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.1 -0.6264538         1 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.2  0.1836433         2 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.3 -0.8356286         3 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.4  1.5952808         4 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.5  0.3295078         5 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.6 -0.8204684         6 Gaussian Noise_1 Gaussian Noise</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">head</span>(simData)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;                      values timepoint               id        process</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.1 -0.6264538         1 Gaussian Noise_1 Gaussian Noise</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.2  0.1836433         2 Gaussian Noise_1 Gaussian Noise</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.3 -0.8356286         3 Gaussian Noise_1 Gaussian Noise</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.4  1.5952808         4 Gaussian Noise_1 Gaussian Noise</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.5  0.3295078         5 Gaussian Noise_1 Gaussian Noise</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.6 -0.8204684         6 Gaussian Noise_1 Gaussian Noise</span></span></code></pre></div>
 <div id="calculating-feature-summary-statistics" class="section level3">
 <h3>Calculating feature summary statistics</h3>
 <p>The core function that automates the calculation of the feature
@@ -419,10 +419,10 @@ default virtual environment folder used by <code>reticulate</code>, you
 would run the following after first having installed <code>theft</code>
 (here I am just creating a new virtual environment called
 <code>&quot;theft-package&quot;</code>—you can call it whatever you like!):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install_python_pkgs</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">install_python_pkgs</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
 <p>You can then run the following to activate the virtual
 environment:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">init_theft</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">init_theft</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
 <p>You are now ready to commit theft using all six potential factory
 feature sets!</p>
 <p>However, you do not necessarily have to use these convenience
@@ -445,40 +445,40 @@ session.</strong></p>
 <p>You are then ready to use the rest of the package’s functionality,
 beginning with the extraction of time-series features. Here is an
 example with the <code>catch22</code> set:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(feature_matrix)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 id          group                    names      values</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise       DN_HistogramMode_5 -0.01408452</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise      DN_HistogramMode_10 -0.27031413</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_1 Gaussian Noise                CO_f1ecac  1.60843425</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_1 Gaussian Noise           CO_FirstMin_ac  3.00000000</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_1 Gaussian Noise CO_HistogramAMI_even_2_5  0.09661403</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_1 Gaussian Noise            CO_trev_1_num  1.51953865</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   feature_set</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     catch22</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     catch22</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     catch22</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4     catch22</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5     catch22</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6     catch22</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">head</span>(feature_matrix)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;                 id          group                    names      values</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise       DN_HistogramMode_5 -0.01408452</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise      DN_HistogramMode_10 -0.27031413</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_1 Gaussian Noise                CO_f1ecac  1.60843425</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_1 Gaussian Noise           CO_FirstMin_ac  3.00000000</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_1 Gaussian Noise CO_HistogramAMI_even_2_5  0.09661403</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_1 Gaussian Noise            CO_trev_1_num  1.51953865</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;   feature_set</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; 1     catch22</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; 2     catch22</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; 3     catch22</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; 4     catch22</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; 5     catch22</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 6     catch22</span></span></code></pre></div>
 <p>Note that for the <code>catch22</code> set you can set the additional
 <code>catch24</code> argument to calculate the mean and standard
 deviation in addition to the standard 22 features:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">catch24 =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                                     <span class="at">catch24 =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div>
 <p>NOTE: If using the <code>tsfresh</code> feature set, you might want
 to consider the <code>tsfresh_cleanup</code> argument to
 <code>calculate_features</code>. This argument defaults to
@@ -492,19 +492,19 @@ features internally. Note that if you don’t want to use any of the
 existing feature sets in <code>theft</code> and only calculate the
 features you supply to <code>features</code>, just set
 <code>feature_set = NULL</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>feature_matrix2 <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">feature_set =</span> <span class="cn">NULL</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">features =</span> <span class="fu">list</span>(<span class="st">&quot;mean&quot;</span> <span class="ot">=</span> mean, <span class="st">&quot;sd&quot;</span> <span class="ot">=</span> sd))</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(feature_matrix2)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 id          group names       values   feature_set</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise  mean  0.106146509 User-supplied</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise    sd  0.900816596 User-supplied</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_2 Gaussian Noise  mean  0.029534984 User-supplied</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_2 Gaussian Noise    sd  1.129814821 User-supplied</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_3 Gaussian Noise  mean -0.009571088 User-supplied</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_3 Gaussian Noise    sd  0.872840204 User-supplied</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>feature_matrix2 <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                                      <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                      <span class="at">feature_set =</span> <span class="cn">NULL</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                      <span class="at">features =</span> <span class="fu">list</span>(<span class="st">&quot;mean&quot;</span> <span class="ot">=</span> mean, <span class="st">&quot;sd&quot;</span> <span class="ot">=</span> sd))</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">head</span>(feature_matrix2)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;                 id          group names       values feature_set</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise  mean  0.106146509        User</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise    sd  0.900816596        User</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_2 Gaussian Noise  mean  0.029534984        User</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_2 Gaussian Noise    sd  1.129814821        User</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_3 Gaussian Noise  mean -0.009571088        User</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_3 Gaussian Noise    sd  0.872840204        User</span></span></code></pre></div>
 </div>
 </div>
 <div id="comparison-of-feature-sets" class="section level3">
@@ -522,7 +522,7 @@ feature extraction in <code>theft</code>. The
 <code>process_hctsa_file</code> function takes a string filepath to the
 Matlab file and does all the work for you, returning a dataframe with
 naming conventions consistent with other <code>theft</code>
-functionality. As per <code>hctsa</code> specifications for <a href="https://hctsa-users.gitbook.io/hctsa-manual/calculating/input_files">Input
+functionality. As per <code>hctsa</code> specifications for <a href="https://time-series-features.gitbook.io/hctsa-manual/installing-and-using-hctsa/calculating/input_files#input-file-format-1-.mat-file">Input
 File Format 1</a>, this file should have 3 variables with the following
 exact names: <code>timeSeriesData</code>, <code>labels</code>, and
 <code>keywords</code>. The filepath can be a local drive path or a

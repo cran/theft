@@ -1,8 +1,8 @@
 Package: theft
 Type: Package
 Title: Tools for Handling Extraction of Features from Time Series
-Version: 0.6.1
-Date: 2024-03-11
+Version: 0.6.3
+Date: 2024-10-03
 Authors@R: c(
   person("Trent", "Henderson", email = "then6675@uni.sydney.edu.au", role = c("cre", "aut")),
   person("Annie", "Bryant", role = "ctb")
@@ -23,14 +23,14 @@ LazyData: true
 Depends: R (>= 3.5.0)
 Imports: utils, rlang, dplyr, tidyr, purrr, tibble, tsibble,
         fabletools, tsfeatures, feasts, Rcatch22, reticulate, R.matlab
-Suggests: theftdlc, lifecycle, cachem, bslib, knitr, markdown,
-        rmarkdown, pkgdown, testthat
-RoxygenNote: 7.2.2
+Suggests: lifecycle, cachem, bslib, knitr, markdown, rmarkdown,
+        pkgdown, testthat
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://hendersontrent.github.io/theft/
 NeedsCompilation: no
-Packaged: 2024-03-11 09:15:09 UTC; trenthenderson
+Packaged: 2024-10-03 08:03:28 UTC; Trent.Henderson
 Author: Trent Henderson [cre, aut],
   Annie Bryant [ctb]
 Repository: CRAN
-Date/Publication: 2024-03-11 11:20:02 UTC
+Date/Publication: 2024-10-03 23:00:02 UTC

@@ -28,8 +28,8 @@ Please also check out our paper [Feature-Based Time-Series Analysis in R
 using the theft Package](https://arxiv.org/abs/2208.06146) which
 discusses the motivation and theoretical underpinnings of `theft` and
 walks through all of its functionality using the [Bonn EEG
-dataset](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.64.061907)
-— a well-studied neuroscience dataset.
+dataset](https://pubmed.ncbi.nlm.nih.gov/11736210/) — a well-studied
+neuroscience dataset.
 
 ## General purpose
 
@@ -165,9 +165,9 @@ and the software:
 
     To cite package 'theft' in publications use:
 
-      Trent Henderson (2024). theft: Tools for Handling Extraction of
-      Features from Time Series. R package version 0.6.1.
-      https://hendersontrent.github.io/theft/
+      Henderson T (2024). _theft: Tools for Handling Extraction of Features
+      from Time Series_. R package version 0.6.3,
+      <https://CRAN.R-project.org/package=theft>.
 
     A BibTeX entry for LaTeX users is
 
@@ -175,23 +175,23 @@ and the software:
         title = {theft: Tools for Handling Extraction of Features from Time Series},
         author = {Trent Henderson},
         year = {2024},
-        note = {R package version 0.6.1},
-        url = {https://hendersontrent.github.io/theft/},
+        note = {R package version 0.6.3},
+        url = {https://CRAN.R-project.org/package=theft},
       }
 
 
     To cite package 'theftdlc' in publications use:
 
-      Trent Henderson (2024). theftdlc: Tools for Analysing and
-      Interpreting Time Series Features. R package version 0.1.0.
-      https://hendersontrent.github.io/theftdlc/
+      Henderson T (2024). _theftdlc: Analyse and Interpret Time Series
+      Features_. R package version 0.1.2,
+      <https://CRAN.R-project.org/package=theftdlc>.
 
     A BibTeX entry for LaTeX users is
 
       @Manual{,
-        title = {theftdlc: Tools for Analysing and Interpreting Time Series Features},
+        title = {theftdlc: Analyse and Interpret Time Series Features},
         author = {Trent Henderson},
         year = {2024},
-        note = {R package version 0.1.0},
-        url = {https://hendersontrent.github.io/theftdlc/},
+        note = {R package version 0.1.2},
+        url = {https://CRAN.R-project.org/package=theftdlc},
       }
