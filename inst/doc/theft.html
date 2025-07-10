@@ -12,7 +12,7 @@
 
 <meta name="author" content="Trent Henderson" />
 
-<meta name="date" content="2024-10-03" />
+<meta name="date" content="2025-07-10" />
 
 <title>Introduction to theft</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to theft</h1>
 <h4 class="author">Trent Henderson</h4>
-<h4 class="date">2024-10-03</h4>
+<h4 class="date">2025-07-10</h4>
 
 
 <div id="TOC">
@@ -349,8 +349,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#core-functionality" id="toc-core-functionality">Core
 functionality</a>
 <ul>
-<li><a href="#calculating-feature-summary-statistics" id="toc-calculating-feature-summary-statistics">Calculating feature
-summary statistics</a>
+<li><a href="#calculating-time-series-features" id="toc-calculating-time-series-features">Calculating time-series
+features</a>
 <ul>
 <li><a href="#installing-python-feature-sets" id="toc-installing-python-feature-sets">Installing Python feature
 sets</a></li>
@@ -369,121 +369,132 @@ interpreting, and visualising time-series features</a></li>
 <div id="purpose" class="section level2">
 <h2>Purpose</h2>
 <p><code>theft</code> enables the standardised calculation of
-time-series features from multiple existing feature sets, and any
-user-supplied features.</p>
+time-series features from six existing feature sets in both R and Python
+as well as any user-supplied features.</p>
 </div>
 <div id="core-functionality" class="section level2">
 <h2>Core functionality</h2>
-<p>To explore package functionality, we are going to use a dataset that
-comes standard with <code>theft</code> called <code>simData</code>. This
-dataset contains a collection of randomly generated time series for six
-different types of processes. The dataset can be accessed via:</p>
+<p>All time-series datasets passed into <code>theft</code> must be a
+<code>tbl_ts</code> generated through the <a href="https://tsibble.tidyverts.org/"><code>tsibble</code></a> R
+package. This ensures consistency with the broader <a href="https://tidyverts.org/"><code>tidyverts</code></a> collection of
+packages. To explore package functionality, we are going to use a
+dataset that comes with <code>theft</code> called <code>simData</code>.
+This dataset contains some simulated time series processes, including
+Gaussian noise, AR(1), ARMA(1,1), MA(1), noisy sinusoid, and a random
+walk. The dataset can be accessed via:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>theft<span class="sc">::</span>simData</span></code></pre></div>
+<p>Note that <code>simData</code> is a <code>tsibble</code> with two
+<code>key</code> variables: <code>id</code> and <code>process</code>
+which identiy each time series by its unique ID and group, and an
+<code>index</code> variable of <code>timepoint</code> which denotes time
+indices.</p>
 <p>The data follows the following structure:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">head</span>(simData)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;                      values timepoint               id        process</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.1 -0.6264538         1 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.2  0.1836433         2 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.3 -0.8356286         3 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.4  1.5952808         4 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.5  0.3295078         5 Gaussian Noise_1 Gaussian Noise</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; Gaussian Noise.6 -0.8204684         6 Gaussian Noise_1 Gaussian Noise</span></span></code></pre></div>
-<div id="calculating-feature-summary-statistics" class="section level3">
-<h3>Calculating feature summary statistics</h3>
-<p>The core function that automates the calculation of the feature
-statistics at once is <code>calculate_features</code>. You can choose
-which subset of features to calculate with the <code>feature_set</code>
-argument. The choices are currently <code>&quot;catch22&quot;</code>,
-<code>&quot;feasts&quot;</code>, <code>&quot;Kats&quot;</code>, <code>&quot;tsfeatures&quot;</code>,
-<code>&quot;tsfresh&quot;</code>, and/or <code>&quot;TSFEL&quot;</code>.</p>
-<p>Note that <code>Kats</code>, <code>tsfresh</code> and
-<code>TSFEL</code> are Python packages. The R package
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; # A tsibble: 6 x 4 [1]</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; # Key:       id, process [1]</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;     values timepoint id      process</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;      &lt;dbl&gt;     &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1  0.0918          1 AR(1)_1 AR(1)  </span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 2  0.00617         2 AR(1)_1 AR(1)  </span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 3  0.154           3 AR(1)_1 AR(1)  </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 4  0.100           4 AR(1)_1 AR(1)  </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 5 -0.0219          5 AR(1)_1 AR(1)  </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 6 -0.230           6 AR(1)_1 AR(1)</span></span></code></pre></div>
+<div id="calculating-time-series-features" class="section level3">
+<h3>Calculating time-series features</h3>
+<p>The core function in <code>theft</code> is
+<code>calculate_features</code>. You can choose which subset of features
+to calculate with the <code>feature_set</code> argument. The choices are
+currently <code>&quot;catch22&quot;</code>, <code>&quot;feasts&quot;</code>,
+<code>&quot;tsfeatures&quot;</code>, <code>&quot;tsfresh&quot;</code>, <code>&quot;tsfel&quot;</code>,
+and <code>&quot;kats&quot;</code>.</p>
+<p>Note that <code>kats</code>, <code>tsfresh</code> and
+<code>tsfel</code> are Python packages. The R package
 <code>reticulate</code> is used to call Python code that uses these
 packages and applies it within the broader <em>tidy</em> data philosophy
-embodied by <code>theft</code>. At present, depending on the input
-time-series, <code>theft</code> provides access to <span class="math inline">\(&gt;1200\)</span> features.</p>
-<p>However, as discussed in the functionality demonstrations below, you
-can also supply your own list of features too! But more on that
-later…</p>
+embodied by <code>theft</code>. <code>theft</code> currently provides
+access to <span class="math inline">\(&gt;1100\)</span> features from
+these six sets alone. However, as discussed in the functionality
+demonstrations below, you can also supply your own list of features
+too!</p>
 <div id="installing-python-feature-sets" class="section level4">
 <h4>Installing Python feature sets</h4>
 <p>Prior to using <code>theft</code> (only if you want to use the
 <code>Kats</code>, <code>tsfresh</code> or <code>TSFEL</code> feature
 sets; the R-based sets will run fine) you should have a working Python
 3.9 installation and run the function
-<code>install_python_pkgs(venv)</code> after first installing
+<code>install_python_pkgs(venv, python)</code> after first installing
 <code>theft</code>, where the <code>venv</code> argument is the name of
-the virtual environment you want to create.</p>
+the virtual environment you want to create and <code>python</code> is
+the path to the Python interpreter you want to use.</p>
 <p>For example, if you wanted to install the Python libraries to the
 default virtual environment folder used by <code>reticulate</code>, you
 would run the following after first having installed <code>theft</code>
 (here I am just creating a new virtual environment called
 <code>&quot;theft-package&quot;</code>—you can call it whatever you like!):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">install_python_pkgs</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">install_python_pkgs</span>(<span class="at">venv =</span> <span class="st">&quot;theft-package&quot;</span>, <span class="at">python =</span> <span class="st">&quot;/usr/local/bin/python3.10&quot;</span>)</span></code></pre></div>
 <p>You can then run the following to activate the virtual
 environment:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">init_theft</span>(<span class="st">&quot;theft-package&quot;</span>)</span></code></pre></div>
-<p>You are now ready to commit theft using all six potential factory
-feature sets!</p>
-<p>However, you do not necessarily have to use these convenience
-functions. If you have another method for pointing R to the correct
-Python (such as <code>reticulate</code> or <code>findpython</code>), you
-can use those in your workflow instead and make sure you install
-<code>Kats</code>, <code>tsfresh</code> or <code>TSFEL</code> as
-required</p>
+<p>You are now ready to commit theft!</p>
 <p><strong>NOTE 1: You only need to call </strong>
-<code>init_theft</code> <strong>or your other solution once per
-session.</strong></p>
-<p><strong>NOTE 2: If you have issues installing </strong>
-<code>Kats</code> <strong>with </strong>
-<code>install_python_pkgs</code> <strong>, try </strong>
-<code>install_python_pkgs(&quot;theft-package&quot;, standard_kats = FALSE)</code>
-<strong>.</strong></p>
+<code>init_theft</code> <strong>once per session.</strong></p>
+<p><strong>NOTE 2: There are also separate installation functions for
+each Python feature set, such as</strong> <code>install_tsfresh</code>
+<strong>if you only need one of the libraries and want to keep your
+dependencies light.</strong></p>
 </div>
 <div id="calculating-features" class="section level4">
 <h4>Calculating features</h4>
-<p>You are then ready to use the rest of the package’s functionality,
-beginning with the extraction of time-series features. Here is an
-example with the <code>catch22</code> set:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">head</span>(feature_matrix)</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;                 id          group                    names      values</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise       DN_HistogramMode_5 -0.01408452</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise      DN_HistogramMode_10 -0.27031413</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_1 Gaussian Noise                CO_f1ecac  1.60843425</span></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_1 Gaussian Noise           CO_FirstMin_ac  3.00000000</span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_1 Gaussian Noise CO_HistogramAMI_even_2_5  0.09661403</span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_1 Gaussian Noise            CO_trev_1_num  1.51953865</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;   feature_set</span></span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; 1     catch22</span></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; 2     catch22</span></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; 3     catch22</span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; 4     catch22</span></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; 5     catch22</span></span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 6     catch22</span></span></code></pre></div>
-<p>Note that for the <code>catch22</code> set you can set the additional
-<code>catch24</code> argument to calculate the mean and standard
-deviation in addition to the standard 22 features:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                                     <span class="at">id_var =</span> <span class="st">&quot;id&quot;</span>, </span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                                     <span class="at">time_var =</span> <span class="st">&quot;timepoint&quot;</span>, </span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                                     <span class="at">values_var =</span> <span class="st">&quot;values&quot;</span>, </span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                                     <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>, </span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                                     <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                                     <span class="at">catch24 =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                                     <span class="at">seed =</span> <span class="dv">123</span>)</span></code></pre></div>
-<p>NOTE: If using the <code>tsfresh</code> feature set, you might want
-to consider the <code>tsfresh_cleanup</code> argument to
-<code>calculate_features</code>. This argument defaults to
-<code>FALSE</code> and specifies whether to use the in-built
-<code>tsfresh</code> relevant feature filter or not.</p>
+<p>The core function in <code>theft</code> is
+<code>calculate_features</code> which takes the following arguments:</p>
+<ul>
+<li><code>data</code>—a <code>tbl_ts</code> containing the time series
+data</li>
+<li><code>feature_set</code>—character or vector of characters denoting
+the set of time-series features to calculate. Can be one or more of
+<code>&quot;catch22&quot;</code>, <code>&quot;feasts&quot;</code>,
+<code>&quot;tsfeatures&quot;</code>, <code>&quot;tsfresh&quot;</code>, <code>&quot;tsfel&quot;</code>,
+or <code>&quot;kats&quot;</code></li>
+<li><code>features</code>—a named list containing a set of user-supplied
+functions to calculate on <code>data</code>. Each function should take a
+single argument which is the time series. Defaults to <code>NULL</code>
+for no manually-specified features. Each list entry must have a name as
+<code>calculate_features</code> looks for these to name the features. If
+you don’t want to use the existing feature sets and only compute those
+passed to <code>features</code>, set
+<code>feature_set = NULL</code></li>
+<li><code>catch24</code>—Boolean specifying whether to compute
+<code>catch24</code> in addition to <code>catch22</code> if
+<code>catch22</code> is one of the feature sets selected. Defaults to
+<code>FALSE</code></li>
+<li><code>tsfresh_cleanup</code>—Boolean specifying whether to use the
+in-built <code>tsfresh</code> relevant feature filter or not. Defaults
+to <code>FALSE</code></li>
+<li><code>use_compengine</code>—Boolean specifying whether to use the
+<code>&quot;compengine&quot;</code> features in <code>tsfeatures</code>. Defaults
+to <code>FALSE</code> to provide immense computational efficiency
+benefits</li>
+<li><code>seed</code>—integer denoting a fixed number for R’s random
+number generator to ensure reproducibility. Defaults to
+<code>123</code></li>
+</ul>
+<p>Here is an example with the <code>catch22</code> set:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">head</span>(feature_matrix)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;        id group feature_set                    names      values</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; 1 AR(1)_1 AR(1)     catch22       DN_HistogramMode_5 -0.14319571</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; 2 AR(1)_1 AR(1)     catch22      DN_HistogramMode_10 -0.38084145</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 3 AR(1)_1 AR(1)     catch22                CO_f1ecac  2.10193383</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 4 AR(1)_1 AR(1)     catch22           CO_FirstMin_ac  5.00000000</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 5 AR(1)_1 AR(1)     catch22 CO_HistogramAMI_even_2_5  0.07406701</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; 6 AR(1)_1 AR(1)     catch22            CO_trev_1_num  0.22413119</span></span></code></pre></div>
+<p>Note that <code>data</code> must be a <code>tsibble::tbl_ts</code>
+object, which has specified <code>key</code> (i.e., identifying) and
+<code>index</code> (i.e., time) variables. <code>theft</code> treats the
+first variable in the <code>key</code> as the ID variable and the second
+as the grouping variable (if there is one). Any other key variables will
+be ignored by <code>theft</code>.</p>
 <p>You can also supply your own named list of functions to compute as
 time-series features. Below is an example with mean and standard
 deviation. Note that the list <em>must</em> be named as
@@ -492,19 +503,18 @@ features internally. Note that if you don’t want to use any of the
 existing feature sets in <code>theft</code> and only calculate the
 features you supply to <code>features</code>, just set
 <code>feature_set = NULL</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>feature_matrix2 <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                                      <span class="at">group_var =</span> <span class="st">&quot;process&quot;</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                      <span class="at">feature_set =</span> <span class="cn">NULL</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                      <span class="at">features =</span> <span class="fu">list</span>(<span class="st">&quot;mean&quot;</span> <span class="ot">=</span> mean, <span class="st">&quot;sd&quot;</span> <span class="ot">=</span> sd))</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">head</span>(feature_matrix2)</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;                 id          group names       values feature_set</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 1 Gaussian Noise_1 Gaussian Noise  mean  0.106146509        User</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 2 Gaussian Noise_1 Gaussian Noise    sd  0.900816596        User</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 3 Gaussian Noise_2 Gaussian Noise  mean  0.029534984        User</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 4 Gaussian Noise_2 Gaussian Noise    sd  1.129814821        User</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 5 Gaussian Noise_3 Gaussian Noise  mean -0.009571088        User</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 6 Gaussian Noise_3 Gaussian Noise    sd  0.872840204        User</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>feature_matrix2 <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, </span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                                      <span class="at">feature_set =</span> <span class="cn">NULL</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                                      <span class="at">features =</span> <span class="fu">list</span>(<span class="st">&quot;mean&quot;</span> <span class="ot">=</span> mean, <span class="st">&quot;sd&quot;</span> <span class="ot">=</span> sd))</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">head</span>(feature_matrix2)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt;         id group feature_set names      values</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 1  AR(1)_1 AR(1)        User  mean  0.01835873</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 2  AR(1)_1 AR(1)        User    sd  0.09866731</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 3 AR(1)_10 AR(1)        User  mean -0.02025604</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 4 AR(1)_10 AR(1)        User    sd  0.10892881</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; 5 AR(1)_11 AR(1)        User  mean -0.02012172</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 6 AR(1)_11 AR(1)        User    sd  0.08864821</span></span></code></pre></div>
 </div>
 </div>
 <div id="comparison-of-feature-sets" class="section level3">
@@ -532,7 +542,7 @@ URL.</p>
 <h2>Analysing, interpreting, and visualising time-series features</h2>
 <p>Please see the companion package <a href="https://github.com/hendersontrent/theftdlc"><code>theftdlc</code></a>
 (‘<code>theft</code> downloadable content’) for a large suite of
-functions.</p>
+functions that are designed to work on top of <code>theft</code>.</p>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
