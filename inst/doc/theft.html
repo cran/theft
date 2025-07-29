@@ -12,7 +12,7 @@
 
 <meta name="author" content="Trent Henderson" />
 
-<meta name="date" content="2025-07-10" />
+<meta name="date" content="2025-07-29" />
 
 <title>Introduction to theft</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to theft</h1>
 <h4 class="author">Trent Henderson</h4>
-<h4 class="date">2025-07-10</h4>
+<h4 class="date">2025-07-29</h4>
 
 
 <div id="TOC">
@@ -385,7 +385,7 @@ walk. The dataset can be accessed via:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>theft<span class="sc">::</span>simData</span></code></pre></div>
 <p>Note that <code>simData</code> is a <code>tsibble</code> with two
 <code>key</code> variables: <code>id</code> and <code>process</code>
-which identiy each time series by its unique ID and group, and an
+which identify each time series by its unique ID and group, and an
 <code>index</code> variable of <code>timepoint</code> which denotes time
 indices.</p>
 <p>The data follows the following structure:</p>
@@ -407,7 +407,13 @@ indices.</p>
 to calculate with the <code>feature_set</code> argument. The choices are
 currently <code>&quot;catch22&quot;</code>, <code>&quot;feasts&quot;</code>,
 <code>&quot;tsfeatures&quot;</code>, <code>&quot;tsfresh&quot;</code>, <code>&quot;tsfel&quot;</code>,
-and <code>&quot;kats&quot;</code>.</p>
+and <code>&quot;kats&quot;</code>. In addition, two basic feature sets
+<code>&quot;quantiles&quot;</code> (a set of 100 quantiles) and
+<code>&quot;moments&quot;</code> (the first four moments of the distribution:
+mean, variance, skewness, and kurtosis) are also available to be
+specified for users seeking to compute simple baselines against which to
+compare the more sophisticated feature sets (see <a href="https://arxiv.org/abs/2303.17809">this recent paper</a> for more
+discussion on this idea).</p>
 <p>Note that <code>kats</code>, <code>tsfresh</code> and
 <code>tsfel</code> are Python packages. The R package
 <code>reticulate</code> is used to call Python code that uses these
@@ -426,7 +432,13 @@ sets; the R-based sets will run fine) you should have a working Python
 <code>install_python_pkgs(venv, python)</code> after first installing
 <code>theft</code>, where the <code>venv</code> argument is the name of
 the virtual environment you want to create and <code>python</code> is
-the path to the Python interpreter you want to use.</p>
+the path to the Python interpreter you want to use. Note that the
+filepath to the Python interpreter will differ depending on your
+operating system. For example, on Windows it might be a path similar to
+<code>&quot;C:/Users/YourName/AppData/Local/Programs/Python/Python310/python.exe&quot;</code>,
+whereas on on Linux or MacOS (which was used for this vignette) it could
+be a path similar to <code>&quot;/usr/local/bin/python3.10&quot;</code> or
+<code>&quot;/usr/bin/python3&quot;</code>.</p>
 <p>For example, if you wanted to install the Python libraries to the
 default virtual environment folder used by <code>reticulate</code>, you
 would run the following after first having installed <code>theft</code>
@@ -455,7 +467,8 @@ data</li>
 the set of time-series features to calculate. Can be one or more of
 <code>&quot;catch22&quot;</code>, <code>&quot;feasts&quot;</code>,
 <code>&quot;tsfeatures&quot;</code>, <code>&quot;tsfresh&quot;</code>, <code>&quot;tsfel&quot;</code>,
-or <code>&quot;kats&quot;</code></li>
+<code>&quot;kats&quot;</code>, <code>&quot;quantiles&quot;</code>, or
+<code>&quot;moments&quot;</code></li>
 <li><code>features</code>—a named list containing a set of user-supplied
 functions to calculate on <code>data</code>. Each function should take a
 single argument which is the time series. Defaults to <code>NULL</code>
@@ -478,6 +491,15 @@ benefits</li>
 <li><code>seed</code>—integer denoting a fixed number for R’s random
 number generator to ensure reproducibility. Defaults to
 <code>123</code></li>
+<li><code>z_score</code>—Boolean specifying whether to <em>z</em>-score
+the time-series before computing features. Defaults to
+<code>FALSE</code></li>
+<li><code>n_jobs</code>—integer denoting the number of parallel
+processes to use if <code>&quot;tsfresh&quot;</code> or <code>&quot;tsfel&quot;</code> are
+specified in <code>feature_set</code>. Defaults to <code>0</code> for no
+parallelisation</li>
+<li><code>warn</code>—Boolean specifying whether to produce warnings
+from feature set packages. Defaults to <code>TRUE</code></li>
 </ul>
 <p>Here is an example with the <code>catch22</code> set:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>feature_matrix <span class="ot">&lt;-</span> <span class="fu">calculate_features</span>(<span class="at">data =</span> simData, <span class="at">feature_set =</span> <span class="st">&quot;catch22&quot;</span>)</span>

@@ -1,8 +1,8 @@
 Package: theft
 Type: Package
 Title: Tools for Handling Extraction of Features from Time Series
-Version: 0.8.1
-Date: 2025-07-10
+Version: 0.8.2
+Date: 2025-07-29
 Authors@R: c(
   person("Trent", "Henderson", email = "then6675@uni.sydney.edu.au", role = c("cre", "aut")),
   person("Annie", "Bryant", role = "ctb")
@@ -28,8 +28,8 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 URL: https://hendersontrent.github.io/theft/
 NeedsCompilation: no
-Packaged: 2025-07-10 02:30:55 UTC; trenthenderson
+Packaged: 2025-07-29 08:42:59 UTC; trenthenderson
 Author: Trent Henderson [cre, aut],
   Annie Bryant [ctb]
 Repository: CRAN
-Date/Publication: 2025-07-10 07:10:02 UTC
+Date/Publication: 2025-07-29 10:40:02 UTC
